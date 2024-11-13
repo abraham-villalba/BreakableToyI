@@ -11,7 +11,6 @@ import com.todos.backend.backend_todos.models.ToDo;
 import com.todos.backend.backend_todos.services.ToDoService;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +35,18 @@ public class ToDoController {
     public ToDo updateToDo(@PathVariable UUID id, @Valid @RequestBody NewToDo updatedToDo) throws ToDoNotFoundException {
         //TODO: process PUT request
         return service.updateToDo(id, updatedToDo);
+    }
+
+    @PutMapping("/todos/{id}/done")
+    public ToDo completeToDo(@PathVariable UUID id) throws ToDoNotFoundException {
+        //TODO: process PUT request
+        return service.completeToDo(id);
+    }
+
+    @PutMapping("/todos/{id}/undone")
+    public ToDo uncompleteToDo(@PathVariable UUID id) throws ToDoNotFoundException {
+        //TODO: process PUT request
+        return service.uncompleteToDo(id);
     }
     
 }

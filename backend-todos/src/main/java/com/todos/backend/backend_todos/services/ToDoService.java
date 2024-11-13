@@ -45,5 +45,37 @@ public class ToDoService {
         toDo.setPriority(updatedToDo.getPriority());
         return repository.save(toDo);
     }
+
+    public ToDo completeToDo(UUID id) {
+        Optional<ToDo> currentToDo = repository.findById(id);
+        // ToDo does not exist
+        if(currentToDo.isEmpty()) {
+            throw new ToDoNotFoundException("To Do not found with id " + id);
+        } 
+        // Update the currentToDo
+        ToDo toDo = currentToDo.get();
+        // TODO: I think this will require further validation.
+        toDo.setDone(true);
+        if (toDo.getDoneDate() == null) {
+            toDo.setDoneDate(new Date());
+        }
+        return repository.save(toDo);
+    }
+
+    public ToDo uncompleteToDo(UUID id) {
+        Optional<ToDo> currentToDo = repository.findById(id);
+        // ToDo does not exist
+        if(currentToDo.isEmpty()) {
+            throw new ToDoNotFoundException("To Do not found with id " + id);
+        } 
+        // Update the currentToDo
+        ToDo toDo = currentToDo.get();
+        // TODO: I think this will require further validation.
+        toDo.setDone(false);
+        if (toDo.getDoneDate() != null) {
+            toDo.setDoneDate(null);
+        }
+        return repository.save(toDo);
+    }
     
 }
