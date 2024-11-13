@@ -9,6 +9,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 
 @Entity
@@ -27,8 +30,12 @@ public class ToDo {
     @Temporal(TemporalType.DATE)
     private Date doneDate;
     
+    @NotBlank(message="Description is required.")
+    @Size(max=120, message="Description should be up to 120 characters.")
     private String text;
     private Boolean done;
+
+    @NotNull(message="To Do's priority is required.")
     private Priority priority;
     
     // Constructor
