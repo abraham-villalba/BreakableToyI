@@ -33,4 +33,12 @@ public class GlobalExceptionHandler {
         // });
         return errors;
     }
+
+    @ExceptionHandler(ToDoNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String,Object> handleToDoNotFound(ToDoNotFoundException e) {
+        Map<String,Object> errors = new HashMap<>();
+        errors.put("error", e.getMessage());
+        return errors;
+    }
 }
