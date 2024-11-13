@@ -3,6 +3,7 @@ package com.todos.backend.backend_todos.services;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -76,6 +77,10 @@ public class ToDoService {
             toDo.setDoneDate(null);
         }
         return repository.save(toDo);
+    }
+
+    public List<ToDo> getAllToDos() {
+        return repository.findAll();
     }
     
 }

@@ -1,5 +1,6 @@
 package com.todos.backend.backend_todos.controllers;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 
 
@@ -47,6 +50,11 @@ public class ToDoController {
     public ToDo uncompleteToDo(@PathVariable UUID id) throws ToDoNotFoundException {
         //TODO: process PUT request
         return service.uncompleteToDo(id);
+    }
+    
+    @GetMapping("/todos")
+    public List<ToDo> getAllToDos() {
+        return service.getAllToDos();
     }
     
 }
