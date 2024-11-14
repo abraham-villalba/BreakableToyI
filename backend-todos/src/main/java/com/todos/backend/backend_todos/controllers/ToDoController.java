@@ -62,9 +62,9 @@ public class ToDoController {
         @RequestParam(required = false) String text,
         @RequestParam(required = false) Priority priority,
         @RequestParam(required = false) Boolean done,
-        @RequestParam(defaultValue = "", required = false) String sortList
+        @RequestParam(defaultValue = "", required = false) String sortBy
     ) {
-        return service.getAllToDosFilterByDoneTextAndPriority(page,size,done,text,priority,sortList);
+        return service.getAllToDosFilterByDoneTextAndPriority(page,size,done,text,priority,sortBy);
         // return service.getAllToDos();
     }
 

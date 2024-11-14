@@ -1,15 +1,20 @@
 package com.todos.backend.backend_todos.services;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.List;
+import java.util.Map;
 
 import com.todos.backend.backend_todos.models.Priority;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.todos.backend.backend_todos.dto.NewToDo;
@@ -22,6 +27,9 @@ public class ToDoService {
 
     @Autowired
     private ToDoRepository repository;
+
+    private static final Set<String> VALID_FIELDS = Set.of("priority", "dueDate");
+    private static final Set<String> VALID_ORDERS = Set.of("asc", "desc");
 
     public ToDoService() {
     }
@@ -107,8 +115,43 @@ public class ToDoService {
         Priority priorityFilter,
         String sortList 
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Sort sort = parseSortParameter(sortList);
+        Pageable pageable = PageRequest.of(page, size, sort);
         return repository.findByDoneTextAndPriority(doneFilter, textFilter, priorityFilter, pageable);
+    }
+
+    private Sort parseSortParameter(String sortList) {
+        if (sortList == null || sortList.isBlank()) {
+            System.out.println("Lista esta vacia");
+            return Sort.unsorted();
+        }
+
+        List<Sort.Order> orders = new ArrayList<>();
+        String[] sortFields = sortList.split(",");
+
+        for (String s : sortFields) {
+            String[] fieldAndOrder = s.split(":");
+            if (fieldAndOrder.length != 2) {
+                throw new IllegalArgumentException("Invalid sort field: " + fieldAndOrder);
+            }
+            String field = fieldAndOrder[0].trim();
+            String order = fieldAndOrder[1].trim();
+
+            if (!VALID_FIELDS.contains(field)) {
+                throw new IllegalArgumentException("Invalid sort field: " + field);
+            }
+
+            if (!VALID_ORDERS.contains(order)) {
+                throw new IllegalArgumentException("Invalid sort field: " + order);
+            }
+
+            Sort.Order sortOrder = order.equals("asc") ? Sort.Order.asc(field) : Sort.Order.desc(field);
+
+            orders.add(sortOrder);
+        }
+
+        return Sort.by(orders);
+        
     }
     
 }
