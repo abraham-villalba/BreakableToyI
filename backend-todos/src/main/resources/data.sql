@@ -1,0 +1,22 @@
+INSERT INTO to_do (id, creation_date, due_date, done_date, text, done, priority) VALUES
+(UUID(), '2024-01-01', '2024-01-10', NULL, 'Buy groceries for the week', FALSE, 0),
+(UUID(), '2024-01-02', '2024-01-05', '2024-01-03', 'Finish quarterly report', TRUE, 1),
+(UUID(), '2024-01-03', '2024-01-12', NULL, 'Schedule meeting with project team', FALSE, 2),
+(UUID(), '2024-01-04', '2024-01-15', '2024-01-06', 'Complete coding assignment for course', TRUE, 2),
+(UUID(), '2024-01-05', '2024-01-18', NULL, 'Call the bank regarding loan payment', FALSE, 1),
+(UUID(), '2024-01-06', '2024-01-14', '2024-01-07', 'Organize the office space', TRUE, 2),
+(UUID(), '2024-01-07', '2024-01-20', NULL, 'Plan weekend getaway with friends', FALSE, 0),
+(UUID(), '2024-01-08', '2024-01-16', '2024-01-10', 'Prepare presentation for client meeting', TRUE, 1),
+(UUID(), '2024-01-09', '2024-01-25', NULL, 'Order new office supplies', FALSE, 0),
+(UUID(), '2024-01-10', '2024-01-19', '2024-01-12', 'Review and edit project proposal', TRUE, 1),
+(UUID(), '2024-01-11', '2024-01-22', NULL, 'Attend webinar on cloud technologies', FALSE, 2),
+(UUID(), '2024-01-12', '2024-01-23', '2024-01-14', 'Update resume and LinkedIn profile', TRUE, 0),
+(UUID(), '2024-01-13', '2024-01-30', NULL, 'Pick up dry cleaning', FALSE, 0),
+(UUID(), '2024-01-14', '2024-02-01', '2024-01-15', 'Follow up with potential clients', TRUE, 2),
+(UUID(), '2024-01-15', '2024-01-28', NULL, 'Clean out email inbox', FALSE, 2),
+(UUID(), '2024-01-16', '2024-01-31', '2024-01-17', 'Attend team-building activity', TRUE, 1),
+(UUID(), '2024-01-17', '2024-02-05', NULL, 'Write blog post for company website', FALSE, 0),
+(UUID(), '2024-01-18', '2024-02-03', '2024-01-20', 'Fix issues in the codebase', TRUE, 2),
+(UUID(), '2024-01-19', '2024-02-07', NULL, 'Submit expense reports', FALSE, 1),
+(UUID(), '2024-01-20', '2024-02-10', '2024-01-22', 'Respond to client feedback on proposal', TRUE, 2);
+

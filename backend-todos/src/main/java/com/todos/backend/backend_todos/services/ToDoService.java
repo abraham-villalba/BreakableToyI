@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.List;
 
+import com.todos.backend.backend_todos.models.Priority;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -93,6 +94,17 @@ public class ToDoService {
         ToDo toDo = currentToDo.get();
     
         repository.delete(toDo);
+    }
+
+    public List<ToDo> getAllToDosFilterByDoneTextAndPriority(
+        Integer page,
+        Integer size,
+        Boolean doneFilter, 
+        String textFilter, 
+        Priority priorityFilter,
+        String sortList 
+    ) {
+        return repository.findByDoneTextAndPriority(doneFilter, textFilter, priorityFilter);
     }
     
 }

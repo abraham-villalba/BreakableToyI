@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.todos.backend.backend_todos.dto.NewToDo;
 import com.todos.backend.backend_todos.exceptions.ToDoNotFoundException;
+import com.todos.backend.backend_todos.models.Priority;
 import com.todos.backend.backend_todos.models.ToDo;
 import com.todos.backend.backend_todos.services.ToDoService;
 
@@ -15,6 +16,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -54,13 +56,20 @@ public class ToDoController {
     }
     
     @GetMapping("/todos")
-    public List<ToDo> getAllToDos() {
-        return service.getAllToDos();
+    public List<ToDo> getAllToDos(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10", required = false) int size,
+        @RequestParam(required = false) String text,
+        @RequestParam(required = false) Priority priority,
+        @RequestParam(required = false) Boolean done,
+        @RequestParam(defaultValue = "", required = false) String sortList
+    ) {
+        return service.getAllToDosFilterByDoneTextAndPriority(page,size,done,text,priority,sortList);
+        // return service.getAllToDos();
     }
 
     @DeleteMapping("/todos/{id}")
     public void deleteToDo(@PathVariable UUID id) throws ToDoNotFoundException {
-        //TODO: process PUT request
         service.deleteToDo(id);
     }
     
