@@ -1,9 +1,9 @@
 package com.todos.backend.backend_todos.controllers;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.todos.backend.backend_todos.dto.NewToDo;
@@ -56,7 +56,7 @@ public class ToDoController {
     }
     
     @GetMapping("/todos")
-    public List<ToDo> getAllToDos(
+    public Page<ToDo> getAllToDos(
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10", required = false) int size,
         @RequestParam(required = false) String text,

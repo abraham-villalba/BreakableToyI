@@ -7,6 +7,9 @@ import java.util.List;
 
 import com.todos.backend.backend_todos.models.Priority;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.todos.backend.backend_todos.dto.NewToDo;
@@ -96,7 +99,7 @@ public class ToDoService {
         repository.delete(toDo);
     }
 
-    public List<ToDo> getAllToDosFilterByDoneTextAndPriority(
+    public Page<ToDo> getAllToDosFilterByDoneTextAndPriority(
         Integer page,
         Integer size,
         Boolean doneFilter, 
@@ -104,7 +107,8 @@ public class ToDoService {
         Priority priorityFilter,
         String sortList 
     ) {
-        return repository.findByDoneTextAndPriority(doneFilter, textFilter, priorityFilter);
+        Pageable pageable = PageRequest.of(page, size);
+        return repository.findByDoneTextAndPriority(doneFilter, textFilter, priorityFilter, pageable);
     }
     
 }
