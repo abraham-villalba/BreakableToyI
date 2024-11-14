@@ -69,5 +69,13 @@ public class GlobalExceptionHandler {
         errors.put("error", "Internal Server Error: Something went wrong...");
         return errors;
     }
-    
+
+    // IllegalArgumentException
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String,Object> handleInvalidArgumentException(IllegalArgumentException e) {
+        Map<String,Object> errors = new HashMap<>();
+        errors.put("error", e.getMessage());
+        return errors;
+    }
 }

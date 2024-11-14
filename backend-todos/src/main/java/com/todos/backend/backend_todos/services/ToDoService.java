@@ -2,12 +2,10 @@ package com.todos.backend.backend_todos.services;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.List;
-import java.util.Map;
 
 import com.todos.backend.backend_todos.models.Priority;
 import org.springframework.beans.factory.annotation.Autowired;
