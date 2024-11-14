@@ -107,7 +107,7 @@ public class ToDoService {
         repository.delete(toDo);
     }
 
-    public Page<ToDo> getAllToDosFilterByDoneTextAndPriority(
+    public Page<ToDo> getAllToDosFilterAndSort(
         Integer page,
         Integer size,
         Boolean doneFilter, 

@@ -56,7 +56,7 @@ public class ToDoController {
     }
     
     @GetMapping("/todos")
-    public Page<ToDo> getAllToDos(
+    public Page<ToDo> getAllToDosFilterAndSort(
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10", required = false) int size,
         @RequestParam(required = false) String text,
@@ -64,8 +64,7 @@ public class ToDoController {
         @RequestParam(required = false) Boolean done,
         @RequestParam(defaultValue = "", required = false) String sortBy
     ) {
-        return service.getAllToDosFilterByDoneTextAndPriority(page,size,done,text,priority,sortBy);
-        // return service.getAllToDos();
+        return service.getAllToDosFilterAndSort(page,size,done,text,priority,sortBy);
     }
 
     @DeleteMapping("/todos/{id}")
