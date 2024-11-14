@@ -82,5 +82,17 @@ public class ToDoService {
     public List<ToDo> getAllToDos() {
         return repository.findAll();
     }
+
+    public void deleteToDo(UUID id) {
+        Optional<ToDo> currentToDo = repository.findById(id);
+        // ToDo does not exist
+        if(currentToDo.isEmpty()) {
+            throw new ToDoNotFoundException("To Do not found with id " + id);
+        } 
+        // Update the currentToDo
+        ToDo toDo = currentToDo.get();
+    
+        repository.delete(toDo);
+    }
     
 }
