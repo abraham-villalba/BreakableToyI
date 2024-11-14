@@ -39,7 +39,6 @@ public class ToDoController {
     // TODO: Add validation for uuid url
     @PutMapping("/todos/{id}")
     public ToDo updateToDo(@PathVariable UUID id, @Valid @RequestBody NewToDo updatedToDo) throws ToDoNotFoundException {
-        //TODO: process PUT request
         return service.updateToDo(id, updatedToDo);
     }
 
