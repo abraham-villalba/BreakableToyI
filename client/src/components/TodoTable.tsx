@@ -14,30 +14,44 @@ export default function TodoTable() {
     },[dispatch, currentPage])
 
     return (
-        <div>
-            <table>
-                <thead>
+        <div className="flex items-center justify-center space-x-2 sm:rounded-sm shadow-sm">
+            <table className="w-full text-left">
+                <thead className="text-gray-700 uppercase bg-gray-50 py-7">
                     <tr>
-                        <th>Done</th>
-                        <th>Name</th>
-                        <th>Priority</th>
-                        <th>Due Date</th>
-                        <th>Actions</th>
+                        <th className="px-6 py-3">Done</th>
+                        <th className="px-6 py-3">Name</th>
+                        <th className="px-6 py-3">
+                            <div className="flex items-center">
+                                Priority
+                                {/** Insert sort logo */}
+                                <span className="cursor-pointer">+</span>
+                            </div>
+                        </th>
+                        <th className="px-6 py-3">
+                            <div className="flex items-center">
+                                Due Date
+                                {/** Insert sort logo */}
+                                <span className="cursor-pointer">+</span>
+                            </div>
+                        </th>
+                        <th className="px-6 py-3">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     { items.length > 0 ? (
                         items.map((item : ToDo) => (
-                            <tr key={item.id}>
-                                <td>
+                            <tr key={item.id} className="bg-white border-b">
+                                <td className="px-7 py-3">
                                     <input type="checkbox" checked={item.done} id={item.id} onChange={() => {console.log('I clicked the checkbox for ' + item.text)}} />
                                 </td>
-                                <td>{item.text}</td>
-                                <td>{item.priority.toLocaleUpperCase()}</td>
-                                <td>{item.dueDate ? new Date(item.dueDate).toLocaleDateString()  : '-'}</td>
-                                <td>
-                                    <button>Edit</button>
-                                    <button>Delete</button>
+                                <td className="px-6 py-3">{item.text}</td>
+                                <td className="px-6 py-3">{item.priority.toLocaleUpperCase()}</td>
+                                <td className="px-6 py-3">{item.dueDate ? new Date(item.dueDate).toLocaleDateString()  : '-'}</td>
+                                <td className="px-6 py-3 text-right">
+                                    <div className="flex justify-center">
+                                        <button className="font-medium px-2 py-2 bg-blue-600 text-white hover:bg-blue-500 rounded-md">Edit</button>
+                                        <button className="font-medium px-2 py-2 bg-red-600 text-white hover:bg-red-500 rounded-md">Delete</button>
+                                    </div>
                                 </td>
                             </tr>
                         ))
