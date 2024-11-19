@@ -14,6 +14,13 @@ export type ToDoForm = {
     priority: 'LOW' | 'MEDIUM' | 'HIGH';
 }
 
+type Pagination = {
+    currentPage: number;
+    pageSize: number;
+    totalPages: number;
+    isLast: boolean;
+}
+
 export type ToDoState = {
     items: ToDo[];
     totalCount: number;
@@ -25,4 +32,5 @@ export type ToDoState = {
     } | null;
     status: 'idle' | 'loading' | 'succeded' | 'failed';
     error: string | null;
+    pagination: Pagination;
 }
