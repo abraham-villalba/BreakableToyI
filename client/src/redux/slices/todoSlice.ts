@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ToDoState } from "../../types/todoTypes";
-import { getTodos } from "../../api/todosApi";
+import { ToDo, ToDoFormForApi, ToDoState } from "../../types/todoTypes";
+import { getTodos, updateTodo } from "../../api/todosApi";
 import { RootState } from "../store";
 
 
@@ -25,6 +25,33 @@ export const fetchToDos = createAsyncThunk(
     }
 );
 
+export const updateToDo = createAsyncThunk(
+    'todos/updateTodo',
+    async (data : {id: string, todoForm: ToDoFormForApi}) => {
+        try {
+            const {id, todoForm} = data;
+            const dataForApi = {
+                text: todoForm.text,
+                priority: todoForm.priority,
+                dueDate: todoForm.dueDate !== "" ? todoForm.dueDate : null
+            };
+            const response = await updateTodo(id, dataForApi);
+            return response.data;
+        } catch (error) {
+            console.log(error);
+        }
+        
+    },
+    {
+        condition(_, thunkApi) {
+            const todosStatus = selectTodosRequestStatus(thunkApi.getState() as RootState);
+            if (todosStatus !== 'idle') {
+                return false; // Prevent from sending a request if there's another request active currently.
+            }
+        }
+    }
+);
+
 const initialState: ToDoState = {
     items: [],
     totalCount: 0,
@@ -44,10 +71,16 @@ const todoSlice = createSlice({
     initialState,
     reducers: {
         setCurrentPage(state, action: PayloadAction<number>) {
-            console.log("Updated page to" + action.payload);
-            console.log("final is " + state.pagination.isLast);
-            console.log("pages " + state.pagination.totalPages);
             state.pagination.currentPage = action.payload;
+        },
+        updateItem(state, action: PayloadAction<ToDo>) {
+            // Only update the todo if it's on the current items list.
+            const updatedToDo: ToDo = action.payload;
+            console.log(updateToDo);
+            const index = state.items.findIndex((todo) => todo.id === updatedToDo.id);
+            if (index >= 0) {
+                state.items[index] = updatedToDo;
+            }
         }
     },
     extraReducers: (builder) => {
@@ -65,6 +98,22 @@ const todoSlice = createSlice({
             .addCase(fetchToDos.rejected, (state, action: PayloadAction<any>) => {
                 state.status = 'failed';
                 state.error = action.payload.error ?? 'Unknown error';
+                state.status = 'idle';
+            })
+            .addCase(updateToDo.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(updateToDo.fulfilled, (state, action: PayloadAction<any>) => {
+                state.status = 'idle';
+                console.log(action);
+                todoSlice.caseReducers.updateItem(state, action);
+            })
+            .addCase(updateToDo.rejected,(state, action: PayloadAction<any>) => {
+                state.status = 'failed';
+                //state.error = action.payload.error ?? 'Unknown error';
+                console.log("Error updating todo");
+                console.log(action);
+                state.status = 'idle';
             })
     }
 })

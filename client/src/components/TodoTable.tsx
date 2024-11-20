@@ -9,7 +9,7 @@ export default function TodoTable() {
     const dispatch = useDispatch<AppDispatch>();
     const { items } = useSelector((state: RootState) => state.todos);
     const [isModalOpen, setModalOpen] = useState(false);
-    const [currentTodo, setCurrentTodo] = useState<ToDo | undefined>(undefined);
+    const [currentTodo, setCurrentTodo] = useState<ToDo | null>(null);
 
     useEffect(() => {
         dispatch(fetchToDos())
@@ -18,6 +18,11 @@ export default function TodoTable() {
     const openEditModal = (todo: ToDo) => {
         setCurrentTodo(todo);
         setModalOpen(true);
+    }
+
+    const closeModal = () => {
+        setModalOpen(false);
+        setCurrentTodo(null);
     }
 
     return (
@@ -71,7 +76,7 @@ export default function TodoTable() {
                     )}
                 </tbody>
             </table>
-            <TodoModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} todo={currentTodo} isEditing={true} />
+            <TodoModal isOpen={isModalOpen} onClose={closeModal} todo={currentTodo} isEditing={true} />
         </div>
     )
 }

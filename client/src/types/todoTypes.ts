@@ -14,6 +14,10 @@ export type ToDoForm = {
     priority: 'LOW' | 'MEDIUM' | 'HIGH';
 }
 
+export type ToDoFormForApi = Omit<ToDoForm, 'dueDate'> & {
+    dueDate: string | null;
+}
+
 type Pagination = {
     currentPage: number;
     pageSize: number;
