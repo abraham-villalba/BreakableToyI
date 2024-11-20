@@ -1,17 +1,24 @@
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
 import { ToDo } from "../types/todoTypes";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fetchToDos } from "../redux/slices/todoSlice";
+import TodoModal from "./TodoModal";
 
 export default function TodoTable() {
     const dispatch = useDispatch<AppDispatch>();
     const { items } = useSelector((state: RootState) => state.todos);
-    const currentPage = useSelector((state: RootState) => state.todos.pagination.currentPage)
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [currentTodo, setCurrentTodo] = useState<ToDo | undefined>(undefined);
 
     useEffect(() => {
         dispatch(fetchToDos())
-    },[dispatch, currentPage])
+    },[dispatch]);
+
+    const openEditModal = (todo: ToDo) => {
+        setCurrentTodo(todo);
+        setModalOpen(true);
+    }
 
     return (
         <div className="flex items-center justify-center space-x-2 sm:rounded-sm shadow-sm">
@@ -49,7 +56,7 @@ export default function TodoTable() {
                                 <td className="px-6 py-3">{item.dueDate ? new Date(item.dueDate).toLocaleDateString()  : '-'}</td>
                                 <td className="px-6 py-3 text-right">
                                     <div className="flex justify-center">
-                                        <button className="font-medium px-2 py-2 bg-blue-600 text-white hover:bg-blue-500 rounded-md">Edit</button>
+                                        <button onClick={() => {openEditModal(item)}} className="font-medium px-2 py-2 bg-blue-600 text-white hover:bg-blue-500 rounded-md">Edit</button>
                                         <button className="font-medium px-2 py-2 bg-red-600 text-white hover:bg-red-500 rounded-md">Delete</button>
                                     </div>
                                 </td>
@@ -64,6 +71,7 @@ export default function TodoTable() {
                     )}
                 </tbody>
             </table>
+            <TodoModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} todo={currentTodo} isEditing={true} />
         </div>
     )
 }

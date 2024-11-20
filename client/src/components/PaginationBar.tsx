@@ -43,7 +43,7 @@ export default function PaginationBar() {
     const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
     return (
-        <div className="flex items-center justify-center space-x-2">
+        <div className="flex items-center justify-center space-x-2 pt-4">
             {/* First Button */}
             
             <button
