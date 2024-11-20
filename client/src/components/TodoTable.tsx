@@ -1,29 +1,21 @@
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
 import { ToDo } from "../types/todoTypes";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect } from "react";
 import { fetchToDos, removeTodo, toggleTodo } from "../redux/slices/todoSlice";
-import TodoModal from "./TodoModal";
 
-export default function TodoTable() {
+type TodoTableProps = {
+    handleEdit: (todo: ToDo) => void;
+}
+
+
+export default function TodoTable({handleEdit} : TodoTableProps) {
     const dispatch = useDispatch<AppDispatch>();
     const { items } = useSelector((state: RootState) => state.todos);
-    const [isModalOpen, setModalOpen] = useState(false);
-    const [currentTodo, setCurrentTodo] = useState<ToDo | null>(null);
 
     useEffect(() => {
         dispatch(fetchToDos())
     },[dispatch]);
-
-    const openEditModal = (todo: ToDo) => {
-        setCurrentTodo(todo);
-        setModalOpen(true);
-    }
-
-    const closeModal = () => {
-        setModalOpen(false);
-        setCurrentTodo(null);
-    }
 
     const handleToggle = (_: ChangeEvent<HTMLInputElement>, todo: ToDo) => {
         dispatch(toggleTodo(todo));
@@ -69,7 +61,7 @@ export default function TodoTable() {
                                 <td className="px-6 py-3">{item.dueDate ? new Date(item.dueDate).toLocaleDateString()  : '-'}</td>
                                 <td className="px-6 py-3 text-right">
                                     <div className="flex justify-center">
-                                        <button onClick={() => {openEditModal(item)}} className="font-medium px-2 py-2 bg-blue-600 text-white hover:bg-blue-500 rounded-md">Edit</button>
+                                        <button onClick={() => {handleEdit(item)}} className="font-medium px-2 py-2 bg-blue-600 text-white hover:bg-blue-500 rounded-md">Edit</button>
                                         <button onClick={() => {handleDelete(item.id)}} className="font-medium px-2 py-2 bg-red-600 text-white hover:bg-red-500 rounded-md">Delete</button>
                                     </div>
                                 </td>
@@ -84,7 +76,6 @@ export default function TodoTable() {
                     )}
                 </tbody>
             </table>
-            <TodoModal isOpen={isModalOpen} onClose={closeModal} todo={currentTodo} isEditing={true} />
         </div>
     )
 }

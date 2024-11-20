@@ -1,13 +1,10 @@
-import TodoTable from "./components/TodoTable";
-import PaginationBar from "./components/PaginationBar";
+import TodoPage from "./components/TodoPage";
 
 function App() {
 
   return (
     <>
-      <h1 className='text-6xl'>ToDo App</h1>
-      <TodoTable />
-      <PaginationBar />
+      <TodoPage />
     </>
   )
 }
