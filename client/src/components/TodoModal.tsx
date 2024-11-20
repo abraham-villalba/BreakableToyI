@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux";
 import { ToDo } from "../types/todoTypes";
 import { AppDispatch } from "../redux/store";
 import { ChangeEvent, useEffect, useState } from "react";
-import { updateToDo } from "../redux/slices/todoSlice";
+import { createToDo, updateToDo } from "../redux/slices/todoSlice";
 import { formatForDisplay, formatForInput, parseCreationDate, parseInputDate } from "../utils/dateUtils";
 
 type TodoModalProps = {
@@ -19,7 +19,7 @@ type ToDoForm = {
 }
 
 
-export default function TodoModal({isOpen, onClose, todo, isEditing} : TodoModalProps) {
+export default function TodoModal({isOpen, onClose, todo} : TodoModalProps) {
     const dispatch = useDispatch<AppDispatch>();
     const [formData, setFormData] = useState<ToDoForm>({
         text: todo?.text || '',
@@ -28,7 +28,7 @@ export default function TodoModal({isOpen, onClose, todo, isEditing} : TodoModal
     });
 
     useEffect(() => {
-        if (isEditing && todo) {
+        if (todo) {
             setFormData({
                 text: todo.text,
                 priority: todo.priority,
@@ -41,7 +41,7 @@ export default function TodoModal({isOpen, onClose, todo, isEditing} : TodoModal
                 dueDate: ""
             })
         }
-    }, [todo, isEditing]);
+    }, [todo]);
 
     const validate = () : string | null => {
         if(formData.text.length < 3 || formData.text.length > 120) {
@@ -89,10 +89,10 @@ export default function TodoModal({isOpen, onClose, todo, isEditing} : TodoModal
             alert(error);
             return;
         }
-        if (isEditing && todo && todo.id) {
+        if (todo && todo.id) {
             dispatch(updateToDo({id: todo.id, todoForm: formData})); 
         } else {
-            console.log("Create operation...")
+            dispatch(createToDo(formData))
         }
         onClose();
     }
@@ -100,7 +100,7 @@ export default function TodoModal({isOpen, onClose, todo, isEditing} : TodoModal
     return isOpen ? (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
             <div className="bg-white p-6 rounded shadow-lg w-96">
-                <h2 className="text-xl mb-4">{isEditing ? 'Edit Todo' : 'Add Todo'}</h2>
+                <h2 className="text-xl mb-4">{todo ? 'Edit Todo' : 'Add Todo'}</h2>
                 <form className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium">Text</label>
@@ -140,7 +140,7 @@ export default function TodoModal({isOpen, onClose, todo, isEditing} : TodoModal
                 </form>
                 <div className="mt-4 flex justify-end space-x-2">
                     <button onClick={onClose} className="px-4 py-2 bg-gray-200 rounded">Cancel</button>
-                    <button onClick={handleSubmit} className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-blue-100" disabled={!hasChanges()}>Save</button>
+                    <button onClick={handleSubmit} className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-blue-100" disabled={!hasChanges() || formData.text.length < 3 || formData.text.length > 120}>Save</button>
                 </div>
             </div>
         </div>
