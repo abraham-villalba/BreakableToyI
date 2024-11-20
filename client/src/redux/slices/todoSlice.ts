@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ToDo, ToDoFormForApi, ToDoState } from "../../types/todoTypes";
-import { completeTodo, getTodos, uncompleteTodo, updateTodo } from "../../api/todosApi";
+import { completeTodo, deleteTodo, getTodos, uncompleteTodo, updateTodo } from "../../api/todosApi";
 import { RootState } from "../store";
-import { AxiosResponse } from "axios";
+import { AxiosResponse, HttpStatusCode } from "axios";
 
 
 
@@ -79,6 +79,29 @@ export const toggleTodo = createAsyncThunk(
     }
 );
 
+export const removeTodo = createAsyncThunk(
+    'todo/removeTodo',
+    async (id: string) => {
+        try {
+            const response = await deleteTodo(id);
+            if (response.status !== HttpStatusCode.Ok) {
+                throw new Error("Failed to delete task...")
+            }
+            return id;
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    {
+        condition(_, thunkApi) {
+            const todosStatus = selectTodosRequestStatus(thunkApi.getState() as RootState);
+            if (todosStatus !== 'idle') {
+                return false; // Prevent from sending a request if there's another request active currently.
+            }
+        }
+    }
+);
+
 const initialState: ToDoState = {
     items: [],
     totalCount: 0,
@@ -108,6 +131,9 @@ const todoSlice = createSlice({
             if (index >= 0) {
                 state.items[index] = updatedToDo;
             }
+        },
+        removeItemWithId(state, action: PayloadAction<string>) {
+            state.items = state.items.filter(item => item.id !== action.payload);
         }
     },
     extraReducers: (builder) => {
@@ -150,6 +176,17 @@ const todoSlice = createSlice({
                 state.status = 'idle';
                 console.log(action);
                 todoSlice.caseReducers.updateItem(state, action);
+            })
+            .addCase(removeTodo.pending, (state) => {
+                state.status = 'idle';
+            })
+            .addCase(removeTodo.rejected, (state, action: PayloadAction<any>) => {
+                state.error = action.payload.error ?? 'Unknown error';
+            })
+            .addCase(removeTodo.fulfilled, (state, action: PayloadAction<any>) => {
+                state.status = 'idle';
+                console.log(action);
+                todoSlice.caseReducers.removeItemWithId(state, action);
             })
     }
 })

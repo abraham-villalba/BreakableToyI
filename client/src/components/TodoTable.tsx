@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
 import { ToDo } from "../types/todoTypes";
 import { ChangeEvent, useEffect, useState } from "react";
-import { fetchToDos, toggleTodo } from "../redux/slices/todoSlice";
+import { fetchToDos, removeTodo, toggleTodo } from "../redux/slices/todoSlice";
 import TodoModal from "./TodoModal";
 
 export default function TodoTable() {
@@ -27,6 +27,10 @@ export default function TodoTable() {
 
     const handleToggle = (_: ChangeEvent<HTMLInputElement>, todo: ToDo) => {
         dispatch(toggleTodo(todo));
+    }
+
+    const handleDelete = (id: string) => {
+        dispatch(removeTodo(id));
     }
 
     return (
@@ -66,7 +70,7 @@ export default function TodoTable() {
                                 <td className="px-6 py-3 text-right">
                                     <div className="flex justify-center">
                                         <button onClick={() => {openEditModal(item)}} className="font-medium px-2 py-2 bg-blue-600 text-white hover:bg-blue-500 rounded-md">Edit</button>
-                                        <button className="font-medium px-2 py-2 bg-red-600 text-white hover:bg-red-500 rounded-md">Delete</button>
+                                        <button onClick={() => {handleDelete(item.id)}} className="font-medium px-2 py-2 bg-red-600 text-white hover:bg-red-500 rounded-md">Delete</button>
                                     </div>
                                 </td>
                             </tr>
