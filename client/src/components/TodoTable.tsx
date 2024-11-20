@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
 import { ToDo } from "../types/todoTypes";
 import { ChangeEvent, useEffect } from "react";
-import { fetchToDos, removeTodo, toggleTodo } from "../redux/slices/todoSlice";
+import { addSortBy, fetchToDos, removeTodo, toggleTodo } from "../redux/slices/todoSlice";
 
 type TodoTableProps = {
     handleEdit: (todo: ToDo) => void;
@@ -25,6 +25,11 @@ export default function TodoTable({handleEdit} : TodoTableProps) {
         dispatch(removeTodo(id));
     }
 
+    const handleSortField = (field: string) => {
+        dispatch(addSortBy(field));
+        dispatch(fetchToDos());
+    }
+
     return (
         <div className="flex items-center justify-center space-x-2 sm:rounded-sm shadow-sm">
             <table className="w-full text-left">
@@ -36,14 +41,14 @@ export default function TodoTable({handleEdit} : TodoTableProps) {
                             <div className="flex items-center">
                                 Priority
                                 {/** Insert sort logo */}
-                                <span className="cursor-pointer">+</span>
+                                <span className="cursor-pointer" onClick={() => handleSortField("priority")}>+</span>
                             </div>
                         </th>
                         <th className="px-6 py-3">
                             <div className="flex items-center">
                                 Due Date
                                 {/** Insert sort logo */}
-                                <span className="cursor-pointer">+</span>
+                                <span className="cursor-pointer" onClick={() => handleSortField("dueDate")}>+</span>
                             </div>
                         </th>
                         <th className="px-6 py-3">Actions</th>

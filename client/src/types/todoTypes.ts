@@ -25,6 +25,11 @@ type Pagination = {
     isLast: boolean;
 }
 
+export type Sort = {
+    field: string;
+    asc: boolean;
+}
+
 export type ToDoState = {
     items: ToDo[];
     totalCount: number;
@@ -37,4 +42,5 @@ export type ToDoState = {
     status: 'idle' | 'loading' | 'succeded' | 'failed';
     error: string | null;
     pagination: Pagination;
+    sortBy: Sort[];
 }

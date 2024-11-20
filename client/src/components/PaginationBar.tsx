@@ -40,8 +40,21 @@ export default function PaginationBar() {
         dispatch(fetchToDos())
     }
 
-    const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+    const getPageRange = (current: number, totalPages: number): number[] => {
+        // Ensure the totalPages is at least the current page (edge case prevention)
+        if (totalPages < current) return [];
+      
+        const start = Math.max(1, current - 1); // Start range: one before current, but not below 1
+        const end = Math.min(totalPages, current + 1); // End range: one after current, but not above totalPages
 
+        return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+    };
+
+    const pages = getPageRange(currentPage + 1, totalPages)
+
+    
+      
+    
     return (
         <div className="flex items-center justify-center space-x-2 pt-4">
             {/* First Button */}
