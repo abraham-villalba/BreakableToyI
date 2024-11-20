@@ -1,11 +1,10 @@
-import { useState } from 'react'
+import TodoPage from "./components/TodoPage";
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
-      <h1 className='text-6xl'>ToDo App</h1>
+      <TodoPage />
     </>
   )
 }
