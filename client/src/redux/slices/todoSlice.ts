@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ToDo, ToDoFormForApi, ToDoState } from "../../types/todoTypes";
-import { getTodos, updateTodo } from "../../api/todosApi";
+import { completeTodo, getTodos, uncompleteTodo, updateTodo } from "../../api/todosApi";
 import { RootState } from "../store";
+import { AxiosResponse } from "axios";
 
 
 
@@ -41,6 +42,32 @@ export const updateToDo = createAsyncThunk(
             console.log(error);
         }
         
+    },
+    {
+        condition(_, thunkApi) {
+            const todosStatus = selectTodosRequestStatus(thunkApi.getState() as RootState);
+            if (todosStatus !== 'idle') {
+                return false; // Prevent from sending a request if there's another request active currently.
+            }
+        }
+    }
+);
+
+export const toggleTodo = createAsyncThunk(
+    'todo/toggleTodo',
+    async (todo: ToDo) => {
+        try {
+            const {id, done} = todo;
+            let response: AxiosResponse<any, any>;
+            if (done) {
+                response = await uncompleteTodo(id);
+            } else {
+                response = await completeTodo(id);
+            }
+            return response.data;
+        } catch (error) {
+            console.log(error);
+        }
     },
     {
         condition(_, thunkApi) {
@@ -110,10 +137,19 @@ const todoSlice = createSlice({
             })
             .addCase(updateToDo.rejected,(state, action: PayloadAction<any>) => {
                 state.status = 'failed';
-                //state.error = action.payload.error ?? 'Unknown error';
-                console.log("Error updating todo");
-                console.log(action);
+                state.error = action.payload.error ?? 'Unknown error';
                 state.status = 'idle';
+            })
+            .addCase(toggleTodo.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(toggleTodo.rejected, (state, action: PayloadAction<any>) => {
+                state.error = action.payload.error ?? 'Unknown error';
+            })
+            .addCase(toggleTodo.fulfilled, (state, action: PayloadAction<any>) => {
+                state.status = 'idle';
+                console.log(action);
+                todoSlice.caseReducers.updateItem(state, action);
             })
     }
 })

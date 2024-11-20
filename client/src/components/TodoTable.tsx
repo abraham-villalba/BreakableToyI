@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
 import { ToDo } from "../types/todoTypes";
-import { useEffect, useState } from "react";
-import { fetchToDos } from "../redux/slices/todoSlice";
+import { ChangeEvent, useEffect, useState } from "react";
+import { fetchToDos, toggleTodo } from "../redux/slices/todoSlice";
 import TodoModal from "./TodoModal";
 
 export default function TodoTable() {
@@ -23,6 +23,10 @@ export default function TodoTable() {
     const closeModal = () => {
         setModalOpen(false);
         setCurrentTodo(null);
+    }
+
+    const handleToggle = (_: ChangeEvent<HTMLInputElement>, todo: ToDo) => {
+        dispatch(toggleTodo(todo));
     }
 
     return (
@@ -54,7 +58,7 @@ export default function TodoTable() {
                         items.map((item : ToDo) => (
                             <tr key={item.id} className="bg-white border-b">
                                 <td className="px-7 py-3">
-                                    <input type="checkbox" checked={item.done} id={item.id} onChange={() => {console.log('I clicked the checkbox for ' + item.text)}} />
+                                    <input type="checkbox" checked={item.done} id={item.id} onChange={(e) => handleToggle(e, item)} />
                                 </td>
                                 <td className="px-6 py-3">{item.text}</td>
                                 <td className="px-6 py-3">{item.priority.toLocaleUpperCase()}</td>
