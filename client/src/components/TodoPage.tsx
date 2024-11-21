@@ -1,16 +1,12 @@
 import PaginationBar from "./PaginationBar";
 import TodoTable from "./TodoTable";
-
-//import { useDispatch, useSelector } from "react-redux";
-//import { AppDispatch, RootState } from "../redux/store";
+import TodoFilterForm from "./TodoFilterForm";
 import { ToDo } from "../types/todoTypes";
 import { useState } from "react";
-// import { fetchToDos, removeTodo, toggleTodo } from "../redux/slices/todoSlice";
 import TodoModal from "./TodoModal";
 
 
 export default function TodoPage() {
-    //const dispatch = useDispatch<AppDispatch>();
     const [isModalOpen, setModalOpen] = useState(false);
     const [currentTodo, setCurrentTodo] = useState<ToDo | null>(null);
 
@@ -26,6 +22,7 @@ export default function TodoPage() {
 
     return (
         <>
+            <TodoFilterForm />
             <div className="flex justify-between items-center mb-4">
                 <button onClick={() => {setModalOpen(true)}} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-300">Add Todo</button>
             </div>

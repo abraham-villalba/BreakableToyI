@@ -1,10 +1,10 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Sort, ToDo, ToDoFormForApi, ToDoState } from "../../types/todoTypes";
+import { Sort, ToDo, ToDoFilter, ToDoFormForApi, ToDoState } from "../../types/todoTypes";
 import { completeTodo, createTodo, deleteTodo, getTodos, uncompleteTodo, updateTodo } from "../../api/todosApi";
 import { RootState } from "../store";
 import { AxiosResponse, HttpStatusCode } from "axios";
 
-const buildUrlQuery = (page: number, sort: Sort[]): string => {
+const buildUrlQuery = (page: number, sort: Sort[], filters: ToDoFilter | null): string => {
     let query = "?";
     query += `page=${page}`;
     if (sort.length > 0) {
@@ -12,7 +12,18 @@ const buildUrlQuery = (page: number, sort: Sort[]): string => {
         sort.map((item) => {
             query += `${item.field}:${item.asc ? "asc" : "desc"},`;
         })
+        // Remove the last coma
+        query = query.slice(0, -1);
     }
+    if (filters) {
+        const filterEntries = Object.entries(filters);
+        filterEntries.forEach(([key, value]) => {
+            if (value !== null) {
+                query += `&${key}=${value}`;
+            }
+        });
+    }
+    
     return query;
 }  
 
@@ -20,7 +31,7 @@ export const fetchToDos = createAsyncThunk(
     'todos/fetchTodos',
     async (_, thunkApi) => {
         const state = thunkApi.getState() as RootState;
-        const queryParameters = buildUrlQuery(state.todos.pagination.currentPage, state.todos.sortBy)
+        const queryParameters = buildUrlQuery(state.todos.pagination.currentPage, state.todos.sortBy, state.todos.filterBy)
         console.log(queryParameters);
         const response = await getTodos(queryParameters);
         return response.data;
@@ -149,7 +160,8 @@ const initialState: ToDoState = {
         totalPages: 0,
         isLast: true
     },
-    sortBy: []
+    sortBy: [],
+    filterBy: null
 }
 
 const todoSlice = createSlice({
@@ -186,15 +198,10 @@ const todoSlice = createSlice({
 
             const exists = state.sortBy.some((item) => item.field === field);
             state.sortBy = exists ? sortBy : [...sortBy, {field, asc: true}];
-
-            // Look if user already sorts by the field
-            // const field = action.payload;
-            // const index = state.sortBy.findIndex((item) => item.field === field);
-            // if (index >= 0) {
-            //     state.sortBy[index].asc = !state.sortBy[index].asc;
-            //     return;
-            // }
-            // state.sortBy.push({field, asc: true})
+        },
+        addFilterBy(state, action: PayloadAction<ToDoFilter>) {
+            const filter = action.payload;
+            state.filterBy = filter;
         }
     },
     extraReducers: (builder) => {
@@ -260,5 +267,5 @@ const todoSlice = createSlice({
 })
 
 export const selectTodosRequestStatus = (state: RootState) => state.todos.status;
-export const { setCurrentPage, addSortBy } = todoSlice.actions;
+export const { setCurrentPage, addSortBy, addFilterBy } = todoSlice.actions;
 export default todoSlice.reducer;
