@@ -53,51 +53,56 @@ export default function TodoFilterForm() {
     }
     // TODO: ADD style
     return (
-        <div className="">
-            <div className="">
-                <form className="" onSubmit={(e) => e.preventDefault()}>
-                    <div>
-                        <label className="block text-sm font-medium">Name</label>
+        <section className="fixed top-0 left-0 w-full bg-gray-200 py-4 shadow-md">
+            <div className="max-w-3xl mx-auto px-4">
+                <form onSubmit={(e) => e.preventDefault()}>
+                    <div className="flex">
+                        <label className="block text-sm font-medium self-center pe-5">Name</label>
                         <input
                         name="text"
                         type="text"
                         value={formData.text ? formData.text : ""}
                         onChange={handleInputChange}
-                        className="w-full border rounded p-2"
+                        className="w-full border rounded p-1"
                         />
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium">Priority</label>
-                        <select
-                        name="priority"
-                        value={formData.priority ? formData.priority : "ALL"}
-                        onChange={handleInputChange}
-                        className="w-full border rounded p-2"
-                        >
-                        <option value="ALL">All</option>
-                        <option value="HIGH">High</option>
-                        <option value="MEDIUM">Medium</option>
-                        <option value="LOW">Low</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium">State</label>
-                        <select
-                        name="done"
-                        value={formData.done}
-                        onChange={handleInputChange}
-                        className="w-full border rounded p-2"
-                        >
-                        <option value="ALL">All</option>
-                        <option value="DONE">Done</option>
-                        <option value="UNDONE">Undone</option>
-                        </select>
+                    <div className="flex justify-between">
+                        <div className="w-1/2 pt-3">
+                            <div className="flex">
+                                <label className="block text-sm font-medium pe-3 self-center">Priority</label>
+                                <select
+                                    name="priority"
+                                    value={formData.priority ? formData.priority : "ALL"}
+                                    onChange={handleInputChange}
+                                    className="w-full border rounded p-1"
+                                    >
+                                    <option value="ALL">All</option>
+                                    <option value="HIGH">High</option>
+                                    <option value="MEDIUM">Medium</option>
+                                    <option value="LOW">Low</option>
+                                </select>
+                            </div>
+                            <div className="pt-3 flex">
+                                <label className="block text-sm font-medium self-center pe-6">State</label>
+                                <select
+                                    name="done"
+                                    value={formData.done}
+                                    onChange={handleInputChange}
+                                    className="w-full border rounded p-1"
+                                    >
+                                    <option value="ALL">All</option>
+                                    <option value="DONE">Done</option>
+                                    <option value="UNDONE">Undone</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div className="mt-4 flex self-end space-x-2">
+                            <button onClick={handleSubmit} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded disabled:bg-blue-300" disabled={!hasChanges()}>Search</button>
+                        </div>
                     </div>
                 </form>
-                <div className="mt-4 flex justify-end space-x-2">
-                    <button onClick={handleSubmit} className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-blue-100" disabled={!hasChanges()}>Search</button>
-                </div>
             </div>
-        </div>
+        </section>
     )
 }
