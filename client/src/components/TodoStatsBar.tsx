@@ -6,7 +6,7 @@ export default function TodoStatsBar() {
   
 	return  (
 		<section className="mt-2 w-full py-4 h-full bg-sky-900 text-gray-50">
-			{stats ? (
+			{stats && stats.completed > 0 ? (
 				<div className="max-w-4xl mx-auto flex sm:justify-around sm:flex-row flex-col align-middle justify-around">		
 					<div className="w-full flex flex-col justify-around my-2">
 						<p className="text-center w-full font-bold">Average time to finish tasks</p>

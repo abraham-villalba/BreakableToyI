@@ -47,13 +47,11 @@ export default function TodoTable({handleEdit} : TodoTableProps) {
                             <th className="px-6 py-3">Name</th>
                             <th className="px-6 py-3">
                                 <div className="flex items-center">
-                                    Priority
-                                    <span className="cursor-pointer" onClick={() => handleSortField("priority")}>{'<>'}</span>
+                                    <span className="cursor-pointer hover:text-white hover:underline" onClick={() => handleSortField("priority")}>Priority{'<>'}</span>
                                 </div>
                             </th>
                             <th className="px-6 py-3 mx-auto">
-                                <span>Due Date</span>
-                                <span className="cursor-pointer" onClick={() => handleSortField("dueDate")}>{'<>'}</span>
+                                <span className="cursor-pointer hover:text-white hover:underline" onClick={() => handleSortField("dueDate")}>Due Date{'<>'}</span>
                             </th>
                             <th className="px-6 py-3">Actions</th>
                         </tr>
@@ -65,7 +63,7 @@ export default function TodoTable({handleEdit} : TodoTableProps) {
                                     <td className="px-7 py-3">
                                         <input type="checkbox" checked={item.done} id={item.id} onChange={(e) => handleToggle(e, item)} />
                                     </td>
-                                    <td className="px-6 py-3 text-sm">{item.text}</td>
+                                    <td className={`${item.done ? "line-through" : ""} px-6 py-3 text-sm`}>{item.text}</td>
                                     <td className="px-6 py-3 text-sm">{item.priority.toLocaleUpperCase()}</td>
                                     <td className="px-6 py-3 text-sm">{item.dueDate ? formatForDisplay(new Date(item.dueDate))  : '-'}</td>
                                     <td className="px-6 py-3 text-right">

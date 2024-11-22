@@ -91,15 +91,12 @@ export default function TodoModal({isOpen, onClose, todo} : TodoModalProps) {
         }
         if (todo && todo.id) {
             dispatch(updateToDoAndStats({id: todo.id, todoForm: formData}));
-            // dispatch(updateToDo({id: todo.id, todoForm: formData})); 
-            // dispatch(statsNeedsUpdate(true));
-            // dispatch(fetchStats());
         } else {
             dispatch(createToDo(formData))
         }
         onClose();
     }
-    // TODO: ADD disabled fields to show fields like creationDate, doneDate, etc.
+    
     return isOpen ? (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
             <div className="bg-white p-6 rounded shadow-lg w-96">
@@ -112,7 +109,7 @@ export default function TodoModal({isOpen, onClose, todo} : TodoModalProps) {
                         type="text"
                         value={formData.text}
                         onChange={handleInputChange}
-                        className="w-full border rounded p-2"
+                        className="w-full border rounded p-2 text-sm"
                         />
                     </div>
                     <div>
@@ -121,7 +118,7 @@ export default function TodoModal({isOpen, onClose, todo} : TodoModalProps) {
                         name="priority"
                         value={formData.priority}
                         onChange={handleInputChange}
-                        className="w-full border rounded p-2"
+                        className="w-full border rounded p-2 text-sm"
                         >
                         <option value="HIGH">High</option>
                         <option value="MEDIUM">Medium</option>
@@ -137,9 +134,33 @@ export default function TodoModal({isOpen, onClose, todo} : TodoModalProps) {
                         onChange={(e) => {
                             setFormData({...formData, dueDate: e.target.value ? e.target.value : ""})
                         }}
-                        className="w-full border rounded p-2"
+                        className="w-full border rounded p-2 text-sm"
                         />
                     </div>
+                    { todo && (
+                        <>
+                            <div>
+                                <label className="block text-sm font-medium">Creation Date</label>
+                                <input
+                                name="creationDate"
+                                type="date"
+                                value={todo?.creationDate ? formatForInput(todo.creationDate) : ""}
+                                disabled={true}
+                                className="w-full border rounded p-2 text-sm"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium">Done Date</label>
+                                <input
+                                name="doneDate"
+                                type="date"
+                                value={todo?.doneDate ? formatForInput(todo.doneDate) : ""}
+                                disabled={true}
+                                className="w-full border rounded p-2 text-sm"
+                                />
+                            </div>
+                        </>
+                    ) }
                 </form>
                 <div className="mt-4 flex justify-end space-x-2">
                     <button onClick={onClose} className="px-4 py-2 bg-gray-200 rounded">Cancel</button>
