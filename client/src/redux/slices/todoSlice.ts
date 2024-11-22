@@ -6,6 +6,8 @@ import { AxiosResponse, HttpStatusCode } from "axios";
 
 // Debbuging
 
+const isIdle = (status: ToDoState['status']) => status === 'idle'; 
+
 const buildUrlQuery = (page: number, sort: Sort[], filters: ToDoFilter | null): string => {
     let query = "?";
     query += `page=${page}`;
@@ -32,24 +34,25 @@ const buildUrlQuery = (page: number, sort: Sort[], filters: ToDoFilter | null): 
 export const fetchToDos = createAsyncThunk(
     'todos/fetchTodos',
     async (_, thunkApi) => {
-        const state = thunkApi.getState() as RootState;
-        const queryParameters = buildUrlQuery(state.todos.pagination.currentPage, state.todos.sortBy, state.todos.filterBy);
-        const response = await getTodos(queryParameters);
-        return response.data;
+        try {
+            const state = thunkApi.getState() as RootState;
+            const queryParameters = buildUrlQuery(state.todos.pagination.currentPage, state.todos.sortBy, state.todos.filterBy);
+            const response = await getTodos(queryParameters);
+            return response.data;
+        } catch (error) {
+            return thunkApi.rejectWithValue({message: "Unable to fetch records..."});
+        }
     },
     {
         condition(_, thunkApi) {
-            const todosStatus = selectTodosRequestStatus(thunkApi.getState() as RootState);
-            if (todosStatus !== 'idle') {
-                return false; // Prevent from fetching data if there's fetching currently.
-            }
+            return isIdle(selectTodosRequestStatus(thunkApi.getState() as RootState));
         }
     }
 );
 
 export const updateToDo = createAsyncThunk(
     'todos/updateTodo',
-    async (data : {id: string, todoForm: ToDoFormForApi}) => {
+    async (data : {id: string, todoForm: ToDoFormForApi}, {rejectWithValue}) => {
         try {
             const {id, todoForm} = data;
             const dataForApi = {
@@ -61,23 +64,20 @@ export const updateToDo = createAsyncThunk(
             return response.data;
         } catch (error) {
             console.log(error);
+            return rejectWithValue({message: "Error updating To Do"});
         }
         
     },
     {
         condition(_, thunkApi) {
-            const todosStatus = selectTodosRequestStatus(thunkApi.getState() as RootState);
-            console.log(`Calling 'todos/updateTodo with status: ${todosStatus}'`);
-            if (todosStatus !== 'idle') {
-                return false; // Prevent from sending a request if there's another request active currently.
-            }
+            return isIdle(selectTodosRequestStatus(thunkApi.getState() as RootState));
         }
     }
 );
 
 export const toggleTodo = createAsyncThunk(
     'todo/toggleTodo',
-    async (todo: ToDo) => {
+    async (todo: ToDo, {rejectWithValue}) => {
         try {
             const {id, done} = todo;
             let response: AxiosResponse<any, any>;
@@ -88,23 +88,19 @@ export const toggleTodo = createAsyncThunk(
             }
             return response.data;
         } catch (error) {
-            console.log(error);
+            return rejectWithValue({message: "Error completing/uncompleting To Do"});
         }
     },
     {
         condition(_, thunkApi) {
-            const todosStatus = selectTodosRequestStatus(thunkApi.getState() as RootState);
-            console.log(`Calling 'todos/updateTodo with status: ${todosStatus}'`);
-            if (todosStatus !== 'idle') {
-                return false; // Prevent from sending a request if there's another request active currently.
-            }
+            return isIdle(selectTodosRequestStatus(thunkApi.getState() as RootState));
         }
     }
 );
 
 export const removeTodo = createAsyncThunk(
     'todo/removeTodo',
-    async (id: string) => {
+    async (id: string, {rejectWithValue}) => {
         try {
             const response = await deleteTodo(id);
             if (response.status !== HttpStatusCode.Ok) {
@@ -112,23 +108,19 @@ export const removeTodo = createAsyncThunk(
             }
             return id;
         } catch (error) {
-            console.log(error);
+            return rejectWithValue({message: "Error deleting To Do"});
         }
     },
     {
         condition(_, thunkApi) {
-            const todosStatus = selectTodosRequestStatus(thunkApi.getState() as RootState);
-            console.log(`Calling 'todos/removeTodo with status: ${todosStatus}'`);
-            if (todosStatus !== 'idle') {
-                return false; // Prevent from sending a request if there's another request active currently.
-            }
+            return isIdle(selectTodosRequestStatus(thunkApi.getState() as RootState));
         }
     }
 );
 
 export const createToDo = createAsyncThunk(
     'todos/createTodo',
-    async (todoForm: ToDoFormForApi) => {
+    async (todoForm: ToDoFormForApi, {rejectWithValue}) => {
         try {
             const dataForApi = {
                 text: todoForm.text,
@@ -138,33 +130,30 @@ export const createToDo = createAsyncThunk(
             const response = await createTodo(dataForApi);
             return response.data;
         } catch (error) {
-            console.log(error);
+            return rejectWithValue("Error creating To Do");
         }
         
     },
     {
         condition(_, thunkApi) {
-            const todosStatus = selectTodosRequestStatus(thunkApi.getState() as RootState);
-            console.log(`Calling 'todos/createToDo with status: ${todosStatus}'`);
-            if (todosStatus !== 'idle') {
-                return false; // Prevent from sending a request if there's another request active currently.
-            }
+            return isIdle(selectTodosRequestStatus(thunkApi.getState() as RootState));
         }
     }
 );
 
 export const fetchStats = createAsyncThunk(
     'todos/fetchStats',
-    async () => {
-        const response = await getStats();
-        return response.data;
+    async (_, {rejectWithValue}) => {
+        try {
+            const response = await getStats();
+            return response.data;
+        } catch (error) {
+            return rejectWithValue({message: "Error fetching To Do statistics"});
+        }  
     },
     {
         condition(_, thunkApi) {
-            const todosStatus = selectTodosRequestStatus(thunkApi.getState() as RootState);
-            if (todosStatus !== 'idle') {
-                return false; // Prevent from sending a request if there's another request active currently.
-            }
+            return isIdle(selectTodosRequestStatus(thunkApi.getState() as RootState));
         }
     }
 );
@@ -256,6 +245,9 @@ const todoSlice = createSlice({
                 completedMediumAvgTime: action.payload.averageMediumDoneTime
             };
             state.stats  = stats;
+        },
+        clearError(state) {
+            state.error = null;
         }
     },
     extraReducers: (builder) => {
@@ -274,7 +266,7 @@ const todoSlice = createSlice({
             .addCase(fetchToDos.rejected, (state, action: PayloadAction<any>) => {
                 state.status = 'failed';
                 state.error = action.payload.error ?? 'Unknown error';
-                // state.status = 'idle';
+                state.status = 'idle';
             })
             .addCase(updateToDo.pending, (state) => {
                 state.status = 'loading';
@@ -285,7 +277,7 @@ const todoSlice = createSlice({
             })
             .addCase(updateToDo.rejected,(state, action: PayloadAction<any>) => {
                 state.status = 'failed';
-                state.error = action.payload.error ?? 'Unknown error';
+                state.error = action.payload.message ?? 'Unknown error';
                 state.status = 'idle';
             })
             .addCase(toggleTodo.pending, (state) => {
@@ -293,7 +285,7 @@ const todoSlice = createSlice({
             })
             .addCase(toggleTodo.rejected, (state, action: PayloadAction<any>) => {
                 state.status = 'failed';
-                state.error = action.payload.error ?? 'Unknown error';
+                state.error = action.payload.message ?? 'Unknown error';
             })
             .addCase(toggleTodo.fulfilled, (state, action: PayloadAction<any>) => {
                 state.status = 'idle';
@@ -303,7 +295,7 @@ const todoSlice = createSlice({
                 state.status = 'idle';
             })
             .addCase(removeTodo.rejected, (state, action: PayloadAction<any>) => {
-                state.error = action.payload.error ?? 'Unknown error';
+                state.error = action.payload.message ?? 'Unknown error';
             })
             .addCase(removeTodo.fulfilled, (state, action: PayloadAction<any>) => {
                 state.status = 'idle';
@@ -313,7 +305,7 @@ const todoSlice = createSlice({
                 state.status = 'idle';
             })
             .addCase(createToDo.rejected, (state, action: PayloadAction<any>) => {
-                state.error = action.payload.error ?? 'Unknown error';
+                state.error = action.payload.message ?? 'Unknown error';
             })
             .addCase(createToDo.fulfilled, (state, action: PayloadAction<any>) => {
                 state.status = 'idle';
@@ -327,11 +319,11 @@ const todoSlice = createSlice({
                 state.status = 'idle';
             })
             .addCase(fetchStats.rejected, (state, action: PayloadAction<any>) => {
-                state.error = action.payload.error ?? 'Unknown error';
+                state.error = action.payload.message ?? 'Unknown error';
             })
     }
 })
 
 export const selectTodosRequestStatus = (state: RootState) => state.todos.status;
-export const { setCurrentPage, addSortBy, addFilterBy } = todoSlice.actions;
+export const { setCurrentPage, addSortBy, addFilterBy, clearError } = todoSlice.actions;
 export default todoSlice.reducer;

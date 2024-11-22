@@ -5,6 +5,7 @@ import { ToDo } from "../types/todoTypes";
 import { useState } from "react";
 import TodoModal from "./TodoModal";
 import TodoStatsBar from "./TodoStatsBar";
+import ErrorModal from './ErrorModal';
 
 
 export default function TodoPage() {
@@ -31,6 +32,7 @@ export default function TodoPage() {
             <TodoModal isOpen={isModalOpen} onClose={closeModal} todo={currentTodo} isEditing={currentTodo !== null} />
             <PaginationBar />
             <TodoStatsBar />
+            <ErrorModal />
         </>
     )
 }
