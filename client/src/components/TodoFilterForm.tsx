@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ToDoFilter } from "../types/todoTypes";
 import { AppDispatch, RootState } from "../redux/store";
 import { ChangeEvent, useState } from "react";
-import { addFilterBy, fetchToDos } from "../redux/slices/todoSlice";
+import { addFilterBy, fetchToDos, setCurrentPage } from "../redux/slices/todoSlice";
 
 type ToDoFilterForm = {
     text: string;
@@ -49,11 +49,12 @@ export default function TodoFilterForm() {
             done: formData.done === "ALL" ? null : formData.done === "DONE" ? true : false
         };
         dispatch(addFilterBy(filters));
+        dispatch(setCurrentPage(0));
         dispatch(fetchToDos());
     }
     // TODO: ADD style
     return (
-        <section className="fixed top-0 left-0 w-full bg-gray-200 py-4 shadow-md">
+        <section className="fixed top-0 left-0 w-full bg-sky-900 text-gray-50 py-4 shadow-md">
             <div className="max-w-3xl mx-auto px-4">
                 <form onSubmit={(e) => e.preventDefault()}>
                     <div className="flex">
@@ -63,7 +64,7 @@ export default function TodoFilterForm() {
                         type="text"
                         value={formData.text ? formData.text : ""}
                         onChange={handleInputChange}
-                        className="w-full border rounded p-1"
+                        className="w-full border rounded p-1 text-gray-700"
                         />
                     </div>
                     <div className="flex justify-between">
@@ -74,7 +75,7 @@ export default function TodoFilterForm() {
                                     name="priority"
                                     value={formData.priority ? formData.priority : "ALL"}
                                     onChange={handleInputChange}
-                                    className="w-full border rounded p-1"
+                                    className="w-full border rounded p-1 text-gray-700"
                                     >
                                     <option value="ALL">All</option>
                                     <option value="HIGH">High</option>
@@ -88,7 +89,7 @@ export default function TodoFilterForm() {
                                     name="done"
                                     value={formData.done}
                                     onChange={handleInputChange}
-                                    className="w-full border rounded p-1"
+                                    className="w-full border rounded p-1 text-gray-700"
                                     >
                                     <option value="ALL">All</option>
                                     <option value="DONE">Done</option>
@@ -98,7 +99,7 @@ export default function TodoFilterForm() {
                         </div>
                         
                         <div className="mt-4 flex self-end space-x-2">
-                            <button onClick={handleSubmit} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded disabled:bg-blue-300" disabled={!hasChanges()}>Search</button>
+                            <button onClick={handleSubmit} className="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded disabled:bg-sky-300" disabled={!hasChanges()}>Search</button>
                         </div>
                     </div>
                 </form>
