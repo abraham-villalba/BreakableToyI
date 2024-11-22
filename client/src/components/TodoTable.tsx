@@ -41,7 +41,7 @@ export default function TodoTable({handleEdit} : TodoTableProps) {
         <main className="mt-2 max-w-5xl mx-auto px-4">
             <div className="h-[calc(90vh-144px-96px)] overflow-auto shadow-md rounded border border-gray-300">
                 <table className="w-full text-left">
-                    <thead className="text-gray-700 bg-gray-50 py-7 sticky top-0">
+                    <thead className="text-gray-50 bg-sky-800 py-7 sticky top-0">
                         <tr>
                             <th className="px-6 py-3">Done</th>
                             <th className="px-6 py-3">Name</th>
@@ -70,8 +70,8 @@ export default function TodoTable({handleEdit} : TodoTableProps) {
                                     <td className="px-6 py-3 text-sm">{item.dueDate ? formatForDisplay(new Date(item.dueDate))  : '-'}</td>
                                     <td className="px-6 py-3 text-right">
                                         <div className="flex justify-between">
-                                            <button onClick={() => {handleEdit(item)}} className="font-normal px-2 py-2 bg-blue-600 text-white hover:bg-blue-500 rounded-md me-1">Edit</button>
-                                            <button onClick={() => {handleDelete(item.id)}} className="font-normal px-2 py-2 bg-red-600 text-white hover:bg-red-500 rounded-md">Delete</button>
+                                            <button onClick={() => {handleEdit(item)}} className="font-normal text-sm px-2 py-2 bg-sky-600 text-white hover:bg-sky-500 rounded-md me-1">Edit</button>
+                                            <button onClick={() => {handleDelete(item.id)}} className="font-normal text-sm px-2 py-2 bg-red-600 text-white hover:bg-red-500 rounded-md">Delete</button>
                                         </div>
                                     </td>
                                 </tr>

@@ -25,7 +25,7 @@ export default function TodoPage() {
         <>
             <TodoFilterForm />
             <div className="mb-2 mt-40 max-w-5xl mx-auto px-4">
-                <button onClick={() => {setModalOpen(true)}} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-300">+ New To Do</button>
+                <button onClick={() => {setModalOpen(true)}} className="px-4 py-2 bg-sky-600 text-white rounded hover:bg-sky-500">+ New To Do</button>
             </div>
             <TodoTable handleEdit={handleEdit} />
             <TodoModal isOpen={isModalOpen} onClose={closeModal} todo={currentTodo} isEditing={currentTodo !== null} />

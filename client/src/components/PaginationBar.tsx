@@ -63,10 +63,10 @@ export default function PaginationBar() {
                 <button
                     onClick={handleFirstClick}
                     disabled={totalPages === 0 || isPreviousDisabled()}
-                    className={`px-4 py-2 text-sm ${
+                    className={`px-2 py-1 text-sm ${
                     totalPages === 0 || isPreviousDisabled()
                         ? "text-gray-400 cursor-not-allowed"
-                        : "text-blue-500 hover:text-blue-700"
+                        : "text-sky-500 hover:text-sky-700"
                     }`}
                 >
                     {'<<'}
@@ -74,10 +74,10 @@ export default function PaginationBar() {
                 <button
                     onClick={handlePreviousClick}
                     disabled={isPreviousDisabled()}
-                    className={`px-4 py-2 text-sm ${
+                    className={`px-2 py-1 text-sm ${
                     isPreviousDisabled()
                         ? "text-gray-400 cursor-not-allowed"
-                        : "text-blue-500 hover:text-blue-700"
+                        : "text-sky-500 hover:text-sky-700"
                     }`}
                 >
                     {'<'}
@@ -88,9 +88,9 @@ export default function PaginationBar() {
                     key={page}
                     onClick={() => handlePageClick(page - 1)}
                     disabled={page - 1 === currentPage}
-                    className={`px-4 py-2 text-sm rounded ${
+                    className={`px-2 py-1 text-sm rounded ${
                         page - 1 === currentPage
-                        ? "bg-blue-500 text-white cursor-not-allowed"
+                        ? "bg-sky-500 text-white cursor-not-allowed"
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                     >
@@ -102,22 +102,22 @@ export default function PaginationBar() {
                 <button
                     onClick={handleNextClick}
                     disabled={isLast}
-                    className={`px-4 py-2 text-sm ${
+                    className={`px-2 py-1 text-sm ${
                         isLast
                         ? "text-gray-400 cursor-not-allowed"
-                        : "text-blue-500 hover:text-blue-700"
+                        : "text-sky-500 hover:text-sky-700"
                     }`}
                 >
-                    Next
+                    {'>'}
                 </button>
                 {/* Last Button */}
                 <button
                     onClick={handleLastClick}
                     disabled={totalPages === 0 || isLast}
-                    className={`px-4 py-2 text-sm ${
+                    className={`px-2 py-1 text-sm ${
                     totalPages === 0 || isLast
                         ? "text-gray-400 cursor-not-allowed"
-                        : "text-blue-500 hover:text-blue-700"
+                        : "text-sky-500 hover:text-sky-700"
                     }`}
                 >
                     {'>>'}
