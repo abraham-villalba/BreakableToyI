@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.todos.backend.backend_todos.dto.NewToDo;
+import com.todos.backend.backend_todos.dto.ToDoStatistics;
 import com.todos.backend.backend_todos.exceptions.ToDoNotFoundException;
 import com.todos.backend.backend_todos.models.ToDo;
 import com.todos.backend.backend_todos.repositories.ToDoRepository;
@@ -118,6 +119,80 @@ public class ToDoService {
         return repository.findByDoneTextAndPriority(doneFilter, textFilter, priorityFilter, pageable);
     }
 
+    public ToDoStatistics geToDoStatistics() {
+        long startTime = System.currentTimeMillis();
+        ToDoStatistics stats = new ToDoStatistics();
+        Long totalDoneSeconds = 0L;
+        Long totalLowDoneSeconds = 0L;
+        Long totalMediumDoneSeconds = 0L;
+        Long totalHighDoneSeconds = 0L;
+        int currentPage = 0;
+
+        Pageable pageable = PageRequest.of(currentPage, 100);
+        Page<ToDo> page;
+
+        boolean hasNext = true;
+        while (hasNext) {
+            page = repository.findByDoneTextAndPriority(true, null, null, pageable);
+            for (ToDo toDo : page) {
+                if (toDo.getDoneDate() == null || toDo.getCreationDate() == null) {
+                    continue;
+                }
+                
+                stats.incrementTotalDone();
+                Long elapsedTimeSeconds = (toDo.getDoneDate().getTime() - toDo.getCreationDate().getTime()) / 1000;
+                totalDoneSeconds += elapsedTimeSeconds;
+                switch (toDo.getPriority()) {
+                    case Priority.LOW:
+                        stats.incrementLowDone();
+                        totalLowDoneSeconds += elapsedTimeSeconds;
+                        break;
+                    case Priority.MEDIUM:
+                        stats.incrementMediumDone();
+                        totalMediumDoneSeconds += elapsedTimeSeconds;
+                        break;
+                    default:
+                        stats.incrementHighDone();
+                        totalHighDoneSeconds += elapsedTimeSeconds;
+                        break;
+                }
+            }
+            hasNext = page.hasNext();
+            currentPage++;
+            pageable = PageRequest.of(currentPage, 100);
+        }
+
+        Long avgTime = 0L;
+
+        if (stats.getTotalDone() > 0) {
+            avgTime = totalDoneSeconds / stats.getTotalDone();
+            stats.setAverageDoneTime(formatAverageTime(avgTime));
+        }
+        if (stats.getTotalLowDone() > 0) {
+            avgTime = totalLowDoneSeconds / stats.getTotalLowDone();
+            stats.setAverageLowDoneTime(formatAverageTime(avgTime));
+        }
+        if (stats.getTotalHighDone() > 0) {
+            avgTime = totalHighDoneSeconds / stats.getTotalHighDone();
+            stats.setAverageHighDoneTime(formatAverageTime(avgTime));
+        }
+        if (stats.getTotalMediumDone() > 0) {
+            avgTime = totalMediumDoneSeconds / stats.getTotalMediumDone();
+            stats.setAverageMediumDoneTime(formatAverageTime(avgTime));
+        }
+
+        // End time
+        long endTime = System.currentTimeMillis();
+
+        // Calculate elapsed time in milliseconds
+        long elapsedTime = endTime - startTime;
+
+        // Print the elapsed time
+        System.out.println("Elapsed time: " + elapsedTime + " milliseconds");
+
+        return stats;
+    }
+
     private Sort parseSortParameter(String sortList) {
         if (sortList == null || sortList.isBlank()) {
             System.out.println("Lista esta vacia");
@@ -150,6 +225,17 @@ public class ToDoService {
 
         return Sort.by(orders);
         
+    }
+
+    private String formatAverageTime(Long averageTimeSeconds) {
+        long minutes = averageTimeSeconds / 60;
+        long hours = 0;
+        if (minutes >= 60) {
+            hours = minutes / 60;
+            minutes = minutes % 60;
+        }
+        long seconds = averageTimeSeconds % 60;
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
     
 }

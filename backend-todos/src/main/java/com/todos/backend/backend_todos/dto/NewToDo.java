@@ -6,7 +6,6 @@ import com.todos.backend.backend_todos.models.Priority;
 
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -18,7 +17,6 @@ public class NewToDo {
     private String text;
 
     @Temporal(TemporalType.DATE)
-    @FutureOrPresent
     private Date dueDate;
 
     @NotNull
