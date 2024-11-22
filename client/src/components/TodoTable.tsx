@@ -15,7 +15,6 @@ export default function TodoTable({handleEdit} : TodoTableProps) {
     const { items, status } = useSelector((state: RootState) => state.todos);
 
     useEffect(() => {
-        console.log(items);
         if (status === 'idle') {
             // Get initial list of todos and current statistics
             dispatch(fetchToDosAndStats());
