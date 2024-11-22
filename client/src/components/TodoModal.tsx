@@ -95,8 +95,13 @@ export default function TodoModal({isOpen, onClose, todo} : TodoModalProps) {
             dispatch(createToDo(formData))
         }
         onClose();
+        setFormData({
+            text: "",
+            priority: "LOW",
+            dueDate: ""
+        });
     }
-    
+
     return isOpen ? (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
             <div className="bg-white p-6 rounded shadow-lg w-96">
