@@ -106,7 +106,7 @@ export default function TodoModal({isOpen, onClose, todo} : TodoModalProps) {
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
             <div className="bg-white p-6 rounded shadow-lg w-96">
                 <h2 className="text-xl mb-4">{todo ? 'Edit Todo' : 'Add Todo'}</h2>
-                <form className="space-y-4">
+                <form className="space-y-4" onSubmit={(e) => {e.preventDefault(); handleSubmit();}}>
                     <div>
                         <label className="block text-sm font-medium">Text</label>
                         <input
@@ -166,11 +166,11 @@ export default function TodoModal({isOpen, onClose, todo} : TodoModalProps) {
                             </div>
                         </>
                     ) }
+                    <div className="mt-4 flex justify-end space-x-2">
+                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded">Cancel</button>
+                        <button type="submit" className="px-4 py-2 bg-sky-500 text-white rounded disabled:bg-sky-100" disabled={!hasChanges() || formData.text.length < 3 || formData.text.length > 120}>Save</button>
+                    </div>
                 </form>
-                <div className="mt-4 flex justify-end space-x-2">
-                    <button onClick={onClose} className="px-4 py-2 bg-gray-200 rounded">Cancel</button>
-                    <button onClick={handleSubmit} className="px-4 py-2 bg-sky-500 text-white rounded disabled:bg-sky-100" disabled={!hasChanges() || formData.text.length < 3 || formData.text.length > 120}>Save</button>
-                </div>
             </div>
         </div>
     ) : null
