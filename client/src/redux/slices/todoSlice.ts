@@ -1,8 +1,10 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Sort, ToDo, ToDoFilter, ToDoFormForApi, ToDoState } from "../../types/todoTypes";
-import { completeTodo, createTodo, deleteTodo, getTodos, uncompleteTodo, updateTodo } from "../../api/todosApi";
-import { RootState } from "../store";
+import { completeTodo, createTodo, deleteTodo, getStats, getTodos, uncompleteTodo, updateTodo } from "../../api/todosApi";
+import { AppDispatch, RootState } from "../store";
 import { AxiosResponse, HttpStatusCode } from "axios";
+
+// Debbuging
 
 const buildUrlQuery = (page: number, sort: Sort[], filters: ToDoFilter | null): string => {
     let query = "?";
@@ -31,8 +33,7 @@ export const fetchToDos = createAsyncThunk(
     'todos/fetchTodos',
     async (_, thunkApi) => {
         const state = thunkApi.getState() as RootState;
-        const queryParameters = buildUrlQuery(state.todos.pagination.currentPage, state.todos.sortBy, state.todos.filterBy)
-        console.log(queryParameters);
+        const queryParameters = buildUrlQuery(state.todos.pagination.currentPage, state.todos.sortBy, state.todos.filterBy);
         const response = await getTodos(queryParameters);
         return response.data;
     },
@@ -66,6 +67,7 @@ export const updateToDo = createAsyncThunk(
     {
         condition(_, thunkApi) {
             const todosStatus = selectTodosRequestStatus(thunkApi.getState() as RootState);
+            console.log(`Calling 'todos/updateTodo with status: ${todosStatus}'`);
             if (todosStatus !== 'idle') {
                 return false; // Prevent from sending a request if there's another request active currently.
             }
@@ -92,6 +94,7 @@ export const toggleTodo = createAsyncThunk(
     {
         condition(_, thunkApi) {
             const todosStatus = selectTodosRequestStatus(thunkApi.getState() as RootState);
+            console.log(`Calling 'todos/updateTodo with status: ${todosStatus}'`);
             if (todosStatus !== 'idle') {
                 return false; // Prevent from sending a request if there's another request active currently.
             }
@@ -115,6 +118,7 @@ export const removeTodo = createAsyncThunk(
     {
         condition(_, thunkApi) {
             const todosStatus = selectTodosRequestStatus(thunkApi.getState() as RootState);
+            console.log(`Calling 'todos/removeTodo with status: ${todosStatus}'`);
             if (todosStatus !== 'idle') {
                 return false; // Prevent from sending a request if there's another request active currently.
             }
@@ -141,12 +145,49 @@ export const createToDo = createAsyncThunk(
     {
         condition(_, thunkApi) {
             const todosStatus = selectTodosRequestStatus(thunkApi.getState() as RootState);
+            console.log(`Calling 'todos/createToDo with status: ${todosStatus}'`);
             if (todosStatus !== 'idle') {
                 return false; // Prevent from sending a request if there's another request active currently.
             }
         }
     }
 );
+
+export const fetchStats = createAsyncThunk(
+    'todos/fetchStats',
+    async () => {
+        const response = await getStats();
+        return response.data;
+    },
+    {
+        condition(_, thunkApi) {
+            const todosStatus = selectTodosRequestStatus(thunkApi.getState() as RootState);
+            if (todosStatus !== 'idle') {
+                return false; // Prevent from sending a request if there's another request active currently.
+            }
+        }
+    }
+);
+
+export const fetchToDosAndStats = () => async (dispatch : AppDispatch) => {
+    await dispatch(fetchToDos());
+    await dispatch(fetchStats());
+}
+
+export const deleteToDoAndUpdateStats = (id: string) => async (dispatch : AppDispatch) => {
+    await dispatch(removeTodo(id));
+    await dispatch(fetchStats());
+}
+
+export const updateToDoAndStats = (data : {id: string, todoForm: ToDoFormForApi}) => async (dispatch : AppDispatch) => {
+    await dispatch(updateToDo(data));
+    await dispatch(fetchStats());
+}
+
+export const toggleToDoAndUpdateStats = (todo: ToDo) => async (dispatch : AppDispatch) => {
+    await dispatch(toggleTodo(todo));
+    await dispatch(fetchStats());
+}
 
 const initialState: ToDoState = {
     items: [],
@@ -202,6 +243,19 @@ const todoSlice = createSlice({
         addFilterBy(state, action: PayloadAction<ToDoFilter>) {
             const filter = action.payload;
             state.filterBy = filter;
+        },
+        setStats(state, action: PayloadAction<any>) {
+            const stats : ToDoState['stats'] = {
+                completed: action.payload.totalDone,
+                completedAvgTime: action.payload.averageDoneTime,
+                completedHigh: action.payload.totalHighDone,
+                completedHighAvgTime: action.payload.averageHighDoneTime,
+                completedLow: action.payload.totalLowDone,
+                completedLowAvgTime: action.payload.averageLowDoneTime,
+                completedMedium: action.payload.totalMediumDone,
+                completedMediumAvgTime: action.payload.averageMediumDoneTime
+            };
+            state.stats  = stats;
         }
     },
     extraReducers: (builder) => {
@@ -210,11 +264,12 @@ const todoSlice = createSlice({
                 state.status = 'loading';
             })
             .addCase(fetchToDos.fulfilled, (state, action: PayloadAction<any>) => {
-                state.status = 'idle';
+                state.status = 'succeded';
                 state.items = action.payload.content;
                 state.totalCount = action.payload.totalElements;
                 state.pagination.totalPages = action.payload.totalPages;
                 state.pagination.isLast = action.payload.last;
+                state.status = 'idle';
             })
             .addCase(fetchToDos.rejected, (state, action: PayloadAction<any>) => {
                 state.status = 'failed';
@@ -237,6 +292,7 @@ const todoSlice = createSlice({
                 state.status = 'loading';
             })
             .addCase(toggleTodo.rejected, (state, action: PayloadAction<any>) => {
+                state.status = 'failed';
                 state.error = action.payload.error ?? 'Unknown error';
             })
             .addCase(toggleTodo.fulfilled, (state, action: PayloadAction<any>) => {
@@ -262,6 +318,16 @@ const todoSlice = createSlice({
             .addCase(createToDo.fulfilled, (state, action: PayloadAction<any>) => {
                 state.status = 'idle';
                 todoSlice.caseReducers.insertItem(state, action);
+            })
+            .addCase(fetchStats.pending, (state) => {
+                state.status = 'loading'; // Stats request in progress
+            })
+            .addCase(fetchStats.fulfilled, (state, action: PayloadAction<any>) => {
+                todoSlice.caseReducers.setStats(state, action);
+                state.status = 'idle';
+            })
+            .addCase(fetchStats.rejected, (state, action: PayloadAction<any>) => {
+                state.error = action.payload.error ?? 'Unknown error';
             })
     }
 })

@@ -7,6 +7,10 @@ export const getTodos = (queryParamenters: string) => {
     return axios.get(API_URL + queryParamenters)
 }
 
+export const getStats = () => {
+    return axios.get(API_URL + '/stats');
+}
+
 export const updateTodo = (id: string, data: ToDoFormForApi) => {
     return axios.put(API_URL + '/' + id, data);
 }

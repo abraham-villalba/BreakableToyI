@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
 import { ToDo } from "../types/todoTypes";
 import { ChangeEvent, useEffect } from "react";
-import { addSortBy, fetchToDos, removeTodo, toggleTodo } from "../redux/slices/todoSlice";
+import { addSortBy, deleteToDoAndUpdateStats, fetchToDos, fetchToDosAndStats, toggleToDoAndUpdateStats } from "../redux/slices/todoSlice";
 import { formatForDisplay } from "../utils/dateUtils";
 
 type TodoTableProps = {
@@ -12,18 +12,24 @@ type TodoTableProps = {
 
 export default function TodoTable({handleEdit} : TodoTableProps) {
     const dispatch = useDispatch<AppDispatch>();
-    const { items } = useSelector((state: RootState) => state.todos);
+    const { items, status } = useSelector((state: RootState) => state.todos);
 
     useEffect(() => {
-        dispatch(fetchToDos())
+        if (status === 'idle') {
+            // Get initial list of todos and current statistics
+            dispatch(fetchToDosAndStats());
+        }
     },[dispatch]);
 
     const handleToggle = (_: ChangeEvent<HTMLInputElement>, todo: ToDo) => {
-        dispatch(toggleTodo(todo));
+        // // Get the updated stats after completing or uncompleting a ToDo
+        dispatch(toggleToDoAndUpdateStats(todo));
     }
 
     const handleDelete = (id: string) => {
-        dispatch(removeTodo(id));
+        // // A completed task might've been deleted
+        dispatch(deleteToDoAndUpdateStats(id));
+        
     }
 
     const handleSortField = (field: string) => {

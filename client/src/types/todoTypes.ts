@@ -40,10 +40,14 @@ export type ToDoState = {
     items: ToDo[];
     totalCount: number;
     stats: {
+        completed: number;
+        completedLow: number;
+        completedHigh: number;
+        completedMedium: number;
         completedAvgTime: string;
-        completedLowAvgTime: string | null;
-        completedMediumAvgTime: string | null;
-        completedHighAvgTime: string | null;
+        completedLowAvgTime: string;
+        completedMediumAvgTime: string;
+        completedHighAvgTime: string;
     } | null;
     status: 'idle' | 'loading' | 'succeded' | 'failed';
     error: string | null;

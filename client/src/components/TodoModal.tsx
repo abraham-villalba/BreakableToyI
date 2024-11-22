@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux";
 import { ToDo } from "../types/todoTypes";
 import { AppDispatch } from "../redux/store";
 import { ChangeEvent, useEffect, useState } from "react";
-import { createToDo, updateToDo } from "../redux/slices/todoSlice";
+import { createToDo, updateToDoAndStats } from "../redux/slices/todoSlice";
 import { formatForDisplay, formatForInput, parseCreationDate, parseInputDate } from "../utils/dateUtils";
 
 type TodoModalProps = {
@@ -90,7 +90,10 @@ export default function TodoModal({isOpen, onClose, todo} : TodoModalProps) {
             return;
         }
         if (todo && todo.id) {
-            dispatch(updateToDo({id: todo.id, todoForm: formData})); 
+            dispatch(updateToDoAndStats({id: todo.id, todoForm: formData}));
+            // dispatch(updateToDo({id: todo.id, todoForm: formData})); 
+            // dispatch(statsNeedsUpdate(true));
+            // dispatch(fetchStats());
         } else {
             dispatch(createToDo(formData))
         }

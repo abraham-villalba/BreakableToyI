@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ToDoFilter } from "../types/todoTypes";
 import { AppDispatch, RootState } from "../redux/store";
 import { ChangeEvent, useState } from "react";
-import { addFilterBy, fetchToDos } from "../redux/slices/todoSlice";
+import { addFilterBy, fetchToDos, setCurrentPage } from "../redux/slices/todoSlice";
 
 type ToDoFilterForm = {
     text: string;
@@ -49,6 +49,7 @@ export default function TodoFilterForm() {
             done: formData.done === "ALL" ? null : formData.done === "DONE" ? true : false
         };
         dispatch(addFilterBy(filters));
+        dispatch(setCurrentPage(0));
         dispatch(fetchToDos());
     }
     // TODO: ADD style
