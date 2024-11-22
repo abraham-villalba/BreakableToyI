@@ -1,17 +1,33 @@
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 export default function TodoStatsBar() {
+	const { stats } = useSelector((state: RootState) => state.todos);
   
-  return (
-    <section className="fixed bottom-0 left-0 w-full py-4 bg-red-400 shadow-md">
-        <div className="max-w-4xl">
-            <h3 className="text-center text-white">Stats section</h3>
-            <div>
-                
-            </div>
-            <div>
-
-            </div>
-        </div>
-    </section>
-  )
+	return  (
+		<section className="mt-2 w-full py-4 h-full bg-sky-900 text-gray-50">
+			{stats ? (
+				<div className="max-w-4xl mx-auto flex sm:justify-around sm:flex-row flex-col align-middle justify-around">		
+					<div className="w-full flex flex-col justify-around my-2">
+						<p className="text-center w-full font-bold">Average time to finish tasks</p>
+						<p className="text-center w-full text-sm">{stats.completedAvgTime} minutes</p>
+					</div>
+					<div className="w-full text-center sm:text-left justify-around">
+						<ul className="flex flex-col">
+							<li className="font-bold">Average time to finish tasks by priority:</li>
+							<li className="text-sm"><span className="font-bold">Low: </span>{stats.completedLowAvgTime !== "" ? `${stats.completedLowAvgTime} minutes` : "No information available"}</li>
+							<li className="text-sm"><span className="font-bold">Medium: </span>{stats.completedMediumAvgTime !== "" ? `${stats.completedMediumAvgTime} minutes` : "No information available"}</li>
+							<li className="text-sm"><span className="font-bold">High: </span>{stats.completedHighAvgTime !== "" ? `${stats.completedHighAvgTime} minutes` : "No information available"}</li>
+						</ul>
+						
+					</div>
+				</div>
+			) : (
+				<div className="text-center">
+					No information to display
+				</div>
+			)}
+			
+		</section>
+  	)
 }
