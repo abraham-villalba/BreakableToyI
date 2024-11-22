@@ -274,7 +274,7 @@ const todoSlice = createSlice({
             .addCase(fetchToDos.rejected, (state, action: PayloadAction<any>) => {
                 state.status = 'failed';
                 state.error = action.payload.error ?? 'Unknown error';
-                state.status = 'idle';
+                // state.status = 'idle';
             })
             .addCase(updateToDo.pending, (state) => {
                 state.status = 'loading';

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ToDoFormForApi } from "../types/todoTypes";
 
-const API_URL = 'http://localhost:8080/todos';
+const API_URL = 'http://localhost:9090/todos';
 
 export const getTodos = (queryParamenters: string) => {
     return axios.get(API_URL + queryParamenters)
