@@ -228,14 +228,16 @@ public class ToDoService {
     }
 
     private String formatAverageTime(Long averageTimeSeconds) {
+        System.out.println("Time in seconds: " + averageTimeSeconds);
         long minutes = averageTimeSeconds / 60;
-        long hours = 0;
-        if (minutes >= 60) {
-            hours = minutes / 60;
-            minutes = minutes % 60;
-        }
+        // long hours = 0;
+        // if (minutes >= 60) {
+        //     hours = minutes / 60;
+        //     minutes = minutes % 60;
+        // }
+        //System.out.println("Time in hours: " + hours);
         long seconds = averageTimeSeconds % 60;
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        return String.format("%02d:%02d", minutes, seconds);
     }
     
 }

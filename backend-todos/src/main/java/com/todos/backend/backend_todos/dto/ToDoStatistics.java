@@ -14,7 +14,7 @@ public class ToDoStatistics {
         this.averageDoneTime = "";
         this.averageLowDoneTime = "";
         this.averageMediumDoneTime = "";
-        this.averageLowDoneTime = "";
+        this.averageHighDoneTime = "";
         this.totalDone = 0;
         this.totalHighDone = 0;
         this.totalMediumDone = 0;
