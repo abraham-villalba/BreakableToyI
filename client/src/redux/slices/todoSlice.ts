@@ -212,11 +212,14 @@ const todoSlice = createSlice({
         },
         removeItemWithId(state, action: PayloadAction<string>) {
             state.items = state.items.filter(item => item.id !== action.payload);
+            state.totalCount--;
         },
         insertItem(state, action: PayloadAction<any>) {
             state.items.unshift(action.payload);
             if (state.items.length > 10) {
                 state.items.pop();
+            } else {
+                state.totalCount++;
             }
         },
         addSortBy(state, action: PayloadAction<string>) {
@@ -325,5 +328,5 @@ const todoSlice = createSlice({
 })
 
 export const selectTodosRequestStatus = (state: RootState) => state.todos.status;
-export const { setCurrentPage, addSortBy, addFilterBy, clearError } = todoSlice.actions;
+export const { setCurrentPage, addSortBy, addFilterBy, clearError, insertItem, updateItem, removeItemWithId, setStats } = todoSlice.actions;
 export default todoSlice.reducer;
