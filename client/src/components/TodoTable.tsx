@@ -37,6 +37,23 @@ export default function TodoTable({handleEdit} : TodoTableProps) {
         dispatch(fetchToDos());
     }
 
+    const getColor = (todo: ToDo) : string => {
+        let bg = "";
+        if (todo.dueDate && !todo.done) {
+            const dueDate = new Date(todo.dueDate);
+            const today = new Date();
+            const diffInDays = (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
+            if (diffInDays <= 7) {
+                bg = "bg-red-200"
+            } else if (diffInDays <= 14 && diffInDays > 7) {
+                bg = "bg-yellow-200"
+            } else if (diffInDays > 14) {
+                bg = "bg-green-200"
+            }
+        }
+        return bg !== "" ? bg : "bg-white"
+    }
+
     return (
         <main className="mt-2 max-w-5xl mx-auto px-4">
             <div className="h-[calc(90vh-144px-96px)] overflow-auto shadow-md rounded border border-gray-300">
@@ -59,7 +76,7 @@ export default function TodoTable({handleEdit} : TodoTableProps) {
                     <tbody>
                         { items && items.length > 0 ? (
                             items.map((item : ToDo) => (
-                                <tr key={item.id} className="bg-white border-b">
+                                <tr key={item.id} className={`${getColor(item)} border-b`}>
                                     <td className="px-7 py-3">
                                         <input type="checkbox" checked={item.done} id={item.id} onChange={(e) => handleToggle(e, item)} />
                                     </td>
