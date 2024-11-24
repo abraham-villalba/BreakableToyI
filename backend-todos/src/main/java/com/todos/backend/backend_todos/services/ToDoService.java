@@ -1,5 +1,7 @@
 package com.todos.backend.backend_todos.services;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
@@ -35,9 +37,19 @@ public class ToDoService {
 
     public ToDo createToDo(NewToDo toDo) {
         ToDo newToDo = new ToDo();
+        if (toDo.getDueDate() != null) {
+            LocalDate today = LocalDate.now(); // Current date without time
+            LocalDate dueDate = toDo.getDueDate().toInstant()
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate();
+            if (dueDate.isBefore(today)) {
+                throw new IllegalArgumentException("Due date cannot be in the past.");
+            }
+        }
         newToDo.setCreationDate(new Date());
         newToDo.setDone(false);
         newToDo.setDueDate(toDo.getDueDate());
+        
         newToDo.setText(toDo.getText());
         newToDo.setPriority(toDo.getPriority());
         return repository.save(newToDo);
@@ -51,7 +63,17 @@ public class ToDoService {
         } 
         // Update the currentToDo
         ToDo toDo = currentToDo.get();
-        // TODO: I think this will require further validation.
+        if (updatedToDo.getDueDate() != null) {
+            LocalDate creationDate = toDo.getCreationDate().toInstant()
+                                            .atZone(ZoneId.systemDefault())
+                                            .toLocalDate();
+            LocalDate dueDate = updatedToDo.getDueDate().toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate();
+            if (dueDate.isBefore(creationDate)) {
+                throw new IllegalArgumentException("Due date cannot be in the past.");
+            }
+        }
         toDo.setDueDate(updatedToDo.getDueDate());
         toDo.setText(updatedToDo.getText());
         toDo.setPriority(updatedToDo.getPriority());
@@ -66,7 +88,6 @@ public class ToDoService {
         } 
         // Update the currentToDo
         ToDo toDo = currentToDo.get();
-        // TODO: I think this will require further validation.
         toDo.setDone(true);
         if (toDo.getDoneDate() == null) {
             toDo.setDoneDate(new Date());

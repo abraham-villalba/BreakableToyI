@@ -9,6 +9,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -74,13 +76,14 @@ public class ToDoServiceTest {
         NewToDo updatedToDo = new NewToDo();
         updatedToDo.setText("Updated text");
         updatedToDo.setPriority(Priority.MEDIUM);
-        updatedToDo.setDueDate(new Date());
+        updatedToDo.setDueDate(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
         ToDo existingToDo = new ToDo();
         existingToDo.setId(existingId);
         existingToDo.setText("Old text");
         existingToDo.setPriority(Priority.LOW);
-        existingToDo.setDueDate(new Date());
+        existingToDo.setCreationDate(Date.from(LocalDate.now().minusDays(5).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        existingToDo.setDueDate(Date.from(LocalDate.now().minusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
         ToDo updatedEntity = new ToDo();
         updatedEntity.setId(existingId);
