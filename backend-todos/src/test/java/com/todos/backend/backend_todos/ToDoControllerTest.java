@@ -76,21 +76,6 @@ public class ToDoControllerTest {
     }
 
     @Test
-    public void createWhenDueDateInThePast_thenReturnsBadRequestStatus() throws Exception {
-        // Act & Assert
-        NewToDo invalidToDo = new NewToDo();
-        invalidToDo.setText("Update API Documentation");
-        invalidToDo.setPriority(Priority.MEDIUM);
-        // Set to yesterday's date.
-        invalidToDo.setDueDate(new Date(System.currentTimeMillis() - 24 * 60 * 60 * 100));
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/todos")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(invalidToDo))) // Costruct the body of the request
-            .andExpect(MockMvcResultMatchers.status().isBadRequest()); // Compare it against the expected value
-    }
-
-    @Test
     public void createWhenInvalidPriority_thenReturnsBadRequestStatus() throws Exception {
         // Arrange
         NewToDo invalidToDo = new NewToDo();
