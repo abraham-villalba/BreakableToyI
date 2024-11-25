@@ -5,6 +5,17 @@ This repository includes the first Breakable Toy developed during the Spark prog
 - **Front-end:** React, Redux and Typescript.
 - **Back-end:** Spring Boot and Java with an in-memory database (H2).
 
+### Features
+
+Here are some of they key features and functionalities of the application:
+
+- CRUD for a todo.
+    - This includes setting a todo as complete or uncomplete.
+- Filtering and sorting of records.
+- Pagination
+- Statistics for the average time between creation and done for all todo's and grouped by priority.
+
+
 ## Setup
 
 To set up this project on your local machine follow this instructions after cloning the repository:
