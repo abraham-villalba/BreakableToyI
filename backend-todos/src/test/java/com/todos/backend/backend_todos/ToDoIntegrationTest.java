@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.todos.backend.backend_todos.dto.NewToDo;
 import com.todos.backend.backend_todos.models.Priority;
 import com.todos.backend.backend_todos.models.ToDo;
+import com.todos.backend.backend_todos.repositories.ToDoInMemoryRepository;
 import com.todos.backend.backend_todos.repositories.ToDoRepository;
 import com.todos.backend.backend_todos.services.ToDoService;
 
@@ -33,14 +34,16 @@ public class ToDoIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    // @Autowired
+    // private ToDoRepository repository;
+
     @Autowired
-    private ToDoRepository repository;
+    private ToDoInMemoryRepository repository;
 
     @Autowired
     private ToDoService service;
 
     @Test
-    @Sql("/data.sql")
     public void createWhenInvalidInput_thenReturnsBadRequestStatus() throws Exception {
         // Arrange
         NewToDo invalidToDo = new NewToDo();
@@ -53,7 +56,6 @@ public class ToDoIntegrationTest {
     }
 
     @Test
-    @Sql("/data.sql")
     public void createWhenValidInput_thenCreatesNewToDo() throws Exception {
         // Arrange
         NewToDo validToDo = new NewToDo();
@@ -69,7 +71,7 @@ public class ToDoIntegrationTest {
         assertNotNull(newToDo.getCreationDate(), "Creation date should not be null");
         assertEquals(validToDo.getText(), newToDo.getText(), "Text should be equal");
         assertEquals(validToDo.getPriority(), newToDo.getPriority(), "Priority should be equal");
-
+        System.out.println("Do i print something?");
         ToDo savedToDo = repository.findById(newToDo.getId()).orElse(null);
         assertNotNull(savedToDo, "ToDo wasn't saved");
         assertEquals(newToDo.getText(), savedToDo.getText());

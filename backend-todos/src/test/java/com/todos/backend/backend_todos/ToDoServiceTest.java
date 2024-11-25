@@ -25,13 +25,17 @@ import com.todos.backend.backend_todos.dto.NewToDo;
 import com.todos.backend.backend_todos.exceptions.ToDoNotFoundException;
 import com.todos.backend.backend_todos.models.Priority;
 import com.todos.backend.backend_todos.models.ToDo;
+import com.todos.backend.backend_todos.repositories.ToDoInMemoryRepository;
 import com.todos.backend.backend_todos.repositories.ToDoRepository;
 import com.todos.backend.backend_todos.services.ToDoService;
 
 public class ToDoServiceTest {
 
+    // @Mock
+    // private ToDoRepository repository;
+
     @Mock
-    private ToDoRepository repository;
+    private ToDoInMemoryRepository repository;
 
     @InjectMocks
     private ToDoService service;

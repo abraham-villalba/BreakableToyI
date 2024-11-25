@@ -21,13 +21,18 @@ import com.todos.backend.backend_todos.dto.NewToDo;
 import com.todos.backend.backend_todos.dto.ToDoStatistics;
 import com.todos.backend.backend_todos.exceptions.ToDoNotFoundException;
 import com.todos.backend.backend_todos.models.ToDo;
+import com.todos.backend.backend_todos.repositories.ToDoInMemoryRepository;
 import com.todos.backend.backend_todos.repositories.ToDoRepository;
 
 @Service
 public class ToDoService {
 
+    // H2 implementation
+    // @Autowired
+    // private ToDoRepository repository;
+
     @Autowired
-    private ToDoRepository repository;
+    private ToDoInMemoryRepository repository;
 
     private static final Set<String> VALID_FIELDS = Set.of("priority", "dueDate");
     private static final Set<String> VALID_ORDERS = Set.of("asc", "desc");
@@ -109,10 +114,6 @@ public class ToDoService {
             toDo.setDoneDate(null);
         }
         return repository.save(toDo);
-    }
-
-    public List<ToDo> getAllToDos() {
-        return repository.findAll();
     }
 
     public void deleteToDo(UUID id) {
