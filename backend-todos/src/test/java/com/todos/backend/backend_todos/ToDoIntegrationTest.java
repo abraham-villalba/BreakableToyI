@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -18,7 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.todos.backend.backend_todos.dto.NewToDo;
 import com.todos.backend.backend_todos.models.Priority;
 import com.todos.backend.backend_todos.models.ToDo;
-import com.todos.backend.backend_todos.repositories.ToDoInMemoryRepository;
 import com.todos.backend.backend_todos.repositories.ToDoRepository;
 import com.todos.backend.backend_todos.services.ToDoService;
 
@@ -34,11 +32,9 @@ public class ToDoIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // @Autowired
-    // private ToDoRepository repository;
-
     @Autowired
-    private ToDoInMemoryRepository repository;
+    private ToDoRepository repository;
+
 
     @Autowired
     private ToDoService service;
