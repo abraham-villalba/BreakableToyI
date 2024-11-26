@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -36,11 +35,11 @@ public class ToDoIntegrationTest {
     @Autowired
     private ToDoRepository repository;
 
+
     @Autowired
     private ToDoService service;
 
     @Test
-    @Sql("/data.sql")
     public void createWhenInvalidInput_thenReturnsBadRequestStatus() throws Exception {
         // Arrange
         NewToDo invalidToDo = new NewToDo();
@@ -53,7 +52,6 @@ public class ToDoIntegrationTest {
     }
 
     @Test
-    @Sql("/data.sql")
     public void createWhenValidInput_thenCreatesNewToDo() throws Exception {
         // Arrange
         NewToDo validToDo = new NewToDo();
@@ -69,7 +67,7 @@ public class ToDoIntegrationTest {
         assertNotNull(newToDo.getCreationDate(), "Creation date should not be null");
         assertEquals(validToDo.getText(), newToDo.getText(), "Text should be equal");
         assertEquals(validToDo.getPriority(), newToDo.getPriority(), "Priority should be equal");
-
+        System.out.println("Do i print something?");
         ToDo savedToDo = repository.findById(newToDo.getId()).orElse(null);
         assertNotNull(savedToDo, "ToDo wasn't saved");
         assertEquals(newToDo.getText(), savedToDo.getText());

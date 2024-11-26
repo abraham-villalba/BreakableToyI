@@ -220,6 +220,7 @@ const todoSlice = createSlice({
                 state.items.pop();
             } else {
                 state.totalCount++;
+                state.pagination.totalPages = state.pagination.totalPages > 0 ? state.pagination.totalPages : 1;
             }
         },
         addSortBy(state, action: PayloadAction<string>) {

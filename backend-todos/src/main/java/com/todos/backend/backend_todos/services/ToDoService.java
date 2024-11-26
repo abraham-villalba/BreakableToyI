@@ -29,6 +29,7 @@ public class ToDoService {
     @Autowired
     private ToDoRepository repository;
 
+
     private static final Set<String> VALID_FIELDS = Set.of("priority", "dueDate");
     private static final Set<String> VALID_ORDERS = Set.of("asc", "desc");
 
@@ -109,10 +110,6 @@ public class ToDoService {
             toDo.setDoneDate(null);
         }
         return repository.save(toDo);
-    }
-
-    public List<ToDo> getAllToDos() {
-        return repository.findAll();
     }
 
     public void deleteToDo(UUID id) {
