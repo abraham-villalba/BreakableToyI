@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
 import { ToDo } from "../types/todoTypes";
 import { ChangeEvent, useEffect } from "react";
-import { addSortBy, deleteToDoAndUpdateStats, fetchToDos, fetchToDosAndStats, toggleToDoAndUpdateStats } from "../redux/slices/todoSlice";
+import { addSortBy, deleteToDoAndUpdateStats, fetchToDos, fetchToDosAndStats, setCurrentPage, toggleToDoAndUpdateStats } from "../redux/slices/todoSlice";
 import { formatForDisplay } from "../utils/dateUtils";
 
 type TodoTableProps = {
@@ -33,8 +33,12 @@ export default function TodoTable({handleEdit} : TodoTableProps) {
     }
 
     const handleSortField = (field: string) => {
-        dispatch(addSortBy(field));
-        dispatch(fetchToDos());
+        if (items.length > 0) {
+            dispatch(addSortBy(field));
+            dispatch(setCurrentPage(0));
+            dispatch(fetchToDos());
+        }
+        
     }
 
     const getColor = (todo: ToDo) : string => {
