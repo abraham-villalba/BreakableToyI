@@ -2,7 +2,6 @@ package com.todos.backend.backend_todos.controllers;
 
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -28,11 +26,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8080") 
 public class TaskController {
 
-    @Autowired
-    private TaskService service;
+    private final TaskService service;
+    public TaskController(TaskService service) {
+        this.service = service;
+    }
 
     @PostMapping("/todos")
     public Task createTask(@Valid @RequestBody NewTask task) {
