@@ -21,21 +21,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.todos.backend.backend_todos.dto.NewToDo;
-import com.todos.backend.backend_todos.exceptions.ToDoNotFoundException;
+import com.todos.backend.backend_todos.dto.NewTask;
+import com.todos.backend.backend_todos.exceptions.TaskNotFoundException;
 import com.todos.backend.backend_todos.models.Priority;
-import com.todos.backend.backend_todos.models.ToDo;
-import com.todos.backend.backend_todos.repositories.ToDoRepository;
-import com.todos.backend.backend_todos.services.ToDoService;
+import com.todos.backend.backend_todos.models.Task;
+import com.todos.backend.backend_todos.repositories.TaskRepository;
+import com.todos.backend.backend_todos.services.TaskService;
 
-public class ToDoServiceTest {
+public class TaskServiceTest {
 
     @Mock
-    private ToDoRepository repository;
+    private TaskRepository repository;
 
 
     @InjectMocks
-    private ToDoService service;
+    private TaskService service;
 
     @BeforeEach
     public void setup() {
@@ -45,48 +45,48 @@ public class ToDoServiceTest {
     @Test
     public void createValidNewToDo_returnsNewToDo() {
         // Arrange
-        NewToDo newToDo = new NewToDo();
-        newToDo.setText("Sample Task");
-        newToDo.setPriority(Priority.HIGH);
+        NewTask newTask = new NewTask();
+        newTask.setText("Sample Task");
+        newTask.setPriority(Priority.HIGH);
 
         Date creationDate = new Date();
 
-        ToDo savedToDo = new ToDo();
+        Task savedToDo = new Task();
         savedToDo.setId(UUID.randomUUID());
         savedToDo.setCreationDate(creationDate);
-        savedToDo.setText(newToDo.getText());
-        savedToDo.setPriority(newToDo.getPriority());
+        savedToDo.setText(newTask.getText());
+        savedToDo.setPriority(newTask.getPriority());
 
-        when(repository.save(any(ToDo.class))).thenReturn(savedToDo);
+        when(repository.save(any(Task.class))).thenReturn(savedToDo);
 
         // Act
-        ToDo result = service.createToDo(newToDo);
+        Task result = service.createToDo(newTask);
 
         // Assert
         assertNotNull(result.getId(), "The id should not be null");
-        assertEquals(newToDo.getText(), result.getText(), "The text should match");
-        assertEquals(newToDo.getPriority(), result.getPriority(), "Priorities should match");
+        assertEquals(newTask.getText(), result.getText(), "The text should match");
+        assertEquals(newTask.getPriority(), result.getPriority(), "Priorities should match");
         assertNotNull(result.getCreationDate(),"Creation date is not set");
-        verify(repository, times(1)).save(any(ToDo.class)); // Ensure repo is called once
+        verify(repository, times(1)).save(any(Task.class)); // Ensure repo is called once
     }
 
     @Test
     public void updateToDo_WhenToDoExists_ShouldUpdateAndReturnToDo() {
         // Arrange
         UUID existingId = UUID.randomUUID();
-        NewToDo updatedToDo = new NewToDo();
+        NewTask updatedToDo = new NewTask();
         updatedToDo.setText("Updated text");
         updatedToDo.setPriority(Priority.MEDIUM);
         updatedToDo.setDueDate(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
-        ToDo existingToDo = new ToDo();
+        Task existingToDo = new Task();
         existingToDo.setId(existingId);
         existingToDo.setText("Old text");
         existingToDo.setPriority(Priority.LOW);
         existingToDo.setCreationDate(Date.from(LocalDate.now().minusDays(5).atStartOfDay(ZoneId.systemDefault()).toInstant()));
         existingToDo.setDueDate(Date.from(LocalDate.now().minusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
-        ToDo updatedEntity = new ToDo();
+        Task updatedEntity = new Task();
         updatedEntity.setId(existingId);
         updatedEntity.setText(updatedToDo.getText());
         updatedEntity.setPriority(updatedToDo.getPriority());
@@ -97,10 +97,10 @@ public class ToDoServiceTest {
         when(repository.save(existingToDo)).thenReturn(updatedEntity);
 
         // Act
-        ToDo result = service.updateToDo(existingId, updatedToDo);
+        Task result = service.updateToDo(existingId, updatedToDo);
 
         // Assert
-        assertNotNull(result, "The updated ToDo should not be null");
+        assertNotNull(result, "The updated Task should not be null");
         assertEquals(updatedToDo.getText(), result.getText(), "The text should be updated");
         assertEquals(updatedToDo.getPriority(), result.getPriority(), "The priority should be updated");
         assertEquals(updatedToDo.getDueDate(), result.getDueDate(), "The due date should be updated");
@@ -114,7 +114,7 @@ public class ToDoServiceTest {
     public void updateToDo_WhenToDoDoesNotExist_ShouldThrowException() {
         // Arrange
         UUID nonExistentId = UUID.randomUUID();
-        NewToDo updatedToDo = new NewToDo();
+        NewTask updatedToDo = new NewTask();
         updatedToDo.setText("Updated text");
         updatedToDo.setPriority(Priority.MEDIUM);
         updatedToDo.setDueDate(new Date());
@@ -123,7 +123,7 @@ public class ToDoServiceTest {
         when(repository.findById(nonExistentId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        ToDoNotFoundException exception = assertThrows(ToDoNotFoundException.class, 
+        TaskNotFoundException exception = assertThrows(TaskNotFoundException.class, 
             () -> service.updateToDo(nonExistentId, updatedToDo),
             "Expected a ToDoNotFoundException to be thrown");
 
@@ -140,10 +140,10 @@ public class ToDoServiceTest {
         // Arrange
         UUID existingId = UUID.randomUUID();
 
-        ToDo existingToDo = new ToDo();
+        Task existingToDo = new Task();
         existingToDo.setId(existingId);
 
-        ToDo updatedEntity = new ToDo();
+        Task updatedEntity = new Task();
         updatedEntity.setId(existingId);
         updatedEntity.setDone(true);
         updatedEntity.setDoneDate(new Date());
@@ -153,10 +153,10 @@ public class ToDoServiceTest {
         when(repository.save(existingToDo)).thenReturn(updatedEntity);
 
         // Act
-        ToDo result = service.completeToDo(existingId);
+        Task result = service.completeToDo(existingId);
 
         // Assert
-        assertNotNull(result, "The completed ToDo should not be null");
+        assertNotNull(result, "The completed Task should not be null");
         assertEquals(updatedEntity.getDone(), result.getDone(), "Done should be set to true");
         assertNotNull(result.getDoneDate(), "Done date should be set");
         assertEquals(updatedEntity.getDoneDate(), result.getDoneDate(), "Date should match");
@@ -176,7 +176,7 @@ public class ToDoServiceTest {
         when(repository.findById(nonExistentId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        ToDoNotFoundException exception = assertThrows(ToDoNotFoundException.class, 
+        TaskNotFoundException exception = assertThrows(TaskNotFoundException.class, 
             () -> service.completeToDo(nonExistentId),
             "Expected a ToDoNotFoundException to be thrown");
 

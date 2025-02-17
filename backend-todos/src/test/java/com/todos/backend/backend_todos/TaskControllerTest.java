@@ -18,15 +18,15 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.todos.backend.backend_todos.controllers.ToDoController;
-import com.todos.backend.backend_todos.dto.NewToDo;
-import com.todos.backend.backend_todos.exceptions.ToDoNotFoundException;
+import com.todos.backend.backend_todos.controllers.TaskController;
+import com.todos.backend.backend_todos.dto.NewTask;
+import com.todos.backend.backend_todos.exceptions.TaskNotFoundException;
 import com.todos.backend.backend_todos.models.Priority;
-import com.todos.backend.backend_todos.models.ToDo;
-import com.todos.backend.backend_todos.services.ToDoService;
+import com.todos.backend.backend_todos.models.Task;
+import com.todos.backend.backend_todos.services.TaskService;
 
-@WebMvcTest(ToDoController.class)
-public class ToDoControllerTest {
+@WebMvcTest(TaskController.class)
+public class TaskControllerTest {
 
     // Simulates HTTP requests
     @Autowired
@@ -38,12 +38,12 @@ public class ToDoControllerTest {
 
     // Mocked service to avoid loading full context of the application
     @MockBean
-    private ToDoService toDoService;
+    private TaskService toDoService;
 
     @Test
     public void createWhenInvalidInput_thenReturnsBadRequestStatus() throws Exception {
         // Arrange
-        NewToDo invalidToDo = new NewToDo();
+        NewTask invalidToDo = new NewTask();
         invalidToDo.setText(null);
         // Act & Assert
         // Simulate POST request
@@ -56,7 +56,7 @@ public class ToDoControllerTest {
     @Test
     public void createWhenValidInput_thenReturnsOktStatus() throws Exception {
         // Arrange
-        NewToDo validToDo = new NewToDo();
+        NewTask validToDo = new NewTask();
         validToDo.setText("Update API Documentation");
         validToDo.setPriority(Priority.MEDIUM);
         // Act & Assert
@@ -78,7 +78,7 @@ public class ToDoControllerTest {
     @Test
     public void createWhenInvalidPriority_thenReturnsBadRequestStatus() throws Exception {
         // Arrange
-        NewToDo invalidToDo = new NewToDo();
+        NewTask invalidToDo = new NewTask();
         invalidToDo.setText("Update API Documentation");
         // Missing priority is not valid
 
@@ -92,16 +92,16 @@ public class ToDoControllerTest {
     public void updateWhenValidInput_thenReturnsOKStatus() throws Exception {
         // Arrange
         UUID existingId = UUID.randomUUID();
-        NewToDo updatedToDo = new NewToDo();
+        NewTask updatedToDo = new NewTask();
         updatedToDo.setText("Updating the text field!");
         updatedToDo.setPriority(Priority.LOW);
         
         // Mock Service Layer response
-        ToDo updatedToDoResponse = new ToDo();
+        Task updatedToDoResponse = new Task();
         updatedToDoResponse.setId(existingId);
         updatedToDoResponse.setText(updatedToDo.getText());
         updatedToDoResponse.setPriority(updatedToDo.getPriority());
-        when(toDoService.updateToDo(eq(existingId), any(NewToDo.class))).thenReturn(updatedToDoResponse);
+        when(toDoService.updateToDo(eq(existingId), any(NewTask.class))).thenReturn(updatedToDoResponse);
 
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.put("/todos/" + existingId)
@@ -116,7 +116,7 @@ public class ToDoControllerTest {
     public void updateWhenInvalidInput_thenReturnsBadRequest() throws Exception {
         // Arrange
         UUID id = UUID.randomUUID();
-        NewToDo invalidUpdatedToDo = new NewToDo();
+        NewTask invalidUpdatedToDo = new NewTask();
         invalidUpdatedToDo.setText(null);
         // Act & Assert
         mockMvc.perform(MockMvcRequestBuilders.put("/todos/" + id)
@@ -129,12 +129,12 @@ public class ToDoControllerTest {
     public void updateWhenToDoDoesNotExist_thenReturnsNotFoundStatus() throws Exception {
         // Arrange
         UUID nonExistingId = UUID.randomUUID();
-        NewToDo updatedToDo = new NewToDo();
+        NewTask updatedToDo = new NewTask();
         updatedToDo.setText("Updating the text field!");
         updatedToDo.setPriority(Priority.LOW);
         
         // Mock Service Layer response
-        when(toDoService.updateToDo(eq(nonExistingId), any(NewToDo.class))).thenThrow(new ToDoNotFoundException("To Do not found with id " + nonExistingId));
+        when(toDoService.updateToDo(eq(nonExistingId), any(NewTask.class))).thenThrow(new TaskNotFoundException("To Do not found with id " + nonExistingId));
 
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.put("/todos/" + nonExistingId)
@@ -150,7 +150,7 @@ public class ToDoControllerTest {
         UUID existingId = UUID.randomUUID();
         
         // Mock Service Layer response
-        ToDo updatedToDoResponse = new ToDo();
+        Task updatedToDoResponse = new Task();
         updatedToDoResponse.setId(existingId);
         updatedToDoResponse.setDone(true);
         Date doneDate = new Date();
@@ -171,7 +171,7 @@ public class ToDoControllerTest {
         UUID nonExistingId = UUID.randomUUID();
         
         // Mock Service Layer response
-        when(toDoService.completeToDo(eq(nonExistingId))).thenThrow(new ToDoNotFoundException("To Do not found with id " + nonExistingId));
+        when(toDoService.completeToDo(eq(nonExistingId))).thenThrow(new TaskNotFoundException("To Do not found with id " + nonExistingId));
 
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.put("/todos/" + nonExistingId + "/done"))

@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.todos.backend.backend_todos.dto.NewToDo;
-import com.todos.backend.backend_todos.dto.ToDoStatistics;
-import com.todos.backend.backend_todos.exceptions.ToDoNotFoundException;
+import com.todos.backend.backend_todos.dto.NewTask;
+import com.todos.backend.backend_todos.dto.TaskStatistics;
+import com.todos.backend.backend_todos.exceptions.TaskNotFoundException;
 import com.todos.backend.backend_todos.models.Priority;
-import com.todos.backend.backend_todos.models.ToDo;
-import com.todos.backend.backend_todos.services.ToDoService;
+import com.todos.backend.backend_todos.models.Task;
+import com.todos.backend.backend_todos.services.TaskService;
 
 import jakarta.validation.Valid;
 
@@ -29,33 +29,33 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:8080") 
-public class ToDoController {
+public class TaskController {
 
     @Autowired
-    private ToDoService service;
+    private TaskService service;
 
     @PostMapping("/todos")
-    public ToDo createToDo(@Valid @RequestBody NewToDo toDo) {
-        return service.createToDo(toDo);
+    public Task createToDo(@Valid @RequestBody NewTask task) {
+        return service.createToDo(task);
     }
 
     @PutMapping("/todos/{id}")
-    public ToDo updateToDo(@PathVariable UUID id, @Valid @RequestBody NewToDo updatedToDo) throws ToDoNotFoundException {
+    public Task updateToDo(@PathVariable UUID id, @Valid @RequestBody NewTask updatedToDo) throws TaskNotFoundException {
         return service.updateToDo(id, updatedToDo);
     }
 
     @PutMapping("/todos/{id}/done")
-    public ToDo completeToDo(@PathVariable UUID id) throws ToDoNotFoundException {
+    public Task completeToDo(@PathVariable UUID id) throws TaskNotFoundException {
         return service.completeToDo(id);
     }
 
     @PutMapping("/todos/{id}/undone")
-    public ToDo uncompleteToDo(@PathVariable UUID id) throws ToDoNotFoundException {
+    public Task uncompleteToDo(@PathVariable UUID id) throws TaskNotFoundException {
         return service.uncompleteToDo(id);
     }
     
     @GetMapping("/todos")
-    public Page<ToDo> getAllToDosFilterAndSort(
+    public Page<Task> getAllToDosFilterAndSort(
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10", required = false) int size,
         @RequestParam(required = false) String text,
@@ -67,12 +67,12 @@ public class ToDoController {
     }
 
     @DeleteMapping("/todos/{id}")
-    public void deleteToDo(@PathVariable UUID id) throws ToDoNotFoundException {
+    public void deleteToDo(@PathVariable UUID id) throws TaskNotFoundException {
         service.deleteToDo(id);
     }
 
     @GetMapping("/todos/stats")
-    public ToDoStatistics getStatistics() {
+    public TaskStatistics getStatistics() {
         return service.geToDoStatistics();
     }
     

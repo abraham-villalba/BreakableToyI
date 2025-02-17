@@ -17,7 +17,7 @@ import jakarta.validation.constraints.Size;
 
 
 @Entity
-public class ToDo {
+public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -44,7 +44,7 @@ public class ToDo {
     private Priority priority;
     
     // Constructor
-    public ToDo() {
+    public Task() {
     }
     
     // Setters and Getters

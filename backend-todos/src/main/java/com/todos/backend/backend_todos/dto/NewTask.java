@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public class NewToDo {
+public class NewTask {
     @NotBlank
     @Size(min=3,max=120)
     @NotNull
@@ -22,7 +22,7 @@ public class NewToDo {
     @NotNull
     private Priority priority;
 
-    public NewToDo() {
+    public NewTask() {
     }
 
     public String getText() {

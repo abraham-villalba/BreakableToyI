@@ -1,6 +1,6 @@
 package com.todos.backend.backend_todos.dto;
 
-public class ToDoStatistics {
+public class TaskStatistics {
     private Integer totalDone;
     private Integer totalLowDone;
     private Integer totalMediumDone;
@@ -10,7 +10,7 @@ public class ToDoStatistics {
     private String averageMediumDoneTime;
     private String averageHighDoneTime;
 
-    public ToDoStatistics() {
+    public TaskStatistics() {
         this.averageDoneTime = "";
         this.averageLowDoneTime = "";
         this.averageMediumDoneTime = "";

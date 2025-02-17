@@ -17,55 +17,55 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.todos.backend.backend_todos.dto.NewToDo;
-import com.todos.backend.backend_todos.dto.ToDoStatistics;
-import com.todos.backend.backend_todos.exceptions.ToDoNotFoundException;
-import com.todos.backend.backend_todos.models.ToDo;
-import com.todos.backend.backend_todos.repositories.ToDoRepository;
+import com.todos.backend.backend_todos.dto.NewTask;
+import com.todos.backend.backend_todos.dto.TaskStatistics;
+import com.todos.backend.backend_todos.exceptions.TaskNotFoundException;
+import com.todos.backend.backend_todos.models.Task;
+import com.todos.backend.backend_todos.repositories.TaskRepository;
 
 @Service
-public class ToDoService {
+public class TaskService {
 
     @Autowired
-    private ToDoRepository repository;
+    private TaskRepository repository;
 
 
     private static final Set<String> VALID_FIELDS = Set.of("priority", "dueDate");
     private static final Set<String> VALID_ORDERS = Set.of("asc", "desc");
 
-    public ToDoService() {
+    public TaskService() {
     }
 
-    public ToDo createToDo(NewToDo toDo) {
-        ToDo newToDo = new ToDo();
-        if (toDo.getDueDate() != null) {
+    public Task createToDo(NewTask task) {
+        Task newTask = new Task();
+        if (task.getDueDate() != null) {
             LocalDate today = LocalDate.now(); // Current date without time
-            LocalDate dueDate = toDo.getDueDate().toInstant()
+            LocalDate dueDate = task.getDueDate().toInstant()
                                     .atZone(ZoneId.systemDefault())
                                     .toLocalDate();
             if (dueDate.isBefore(today)) {
                 throw new IllegalArgumentException("Due date cannot be in the past.");
             }
         }
-        newToDo.setCreationDate(new Date());
-        newToDo.setDone(false);
-        newToDo.setDueDate(toDo.getDueDate());
+        newTask.setCreationDate(new Date());
+        newTask.setDone(false);
+        newTask.setDueDate(task.getDueDate());
         
-        newToDo.setText(toDo.getText());
-        newToDo.setPriority(toDo.getPriority());
-        return repository.save(newToDo);
+        newTask.setText(task.getText());
+        newTask.setPriority(task.getPriority());
+        return repository.save(newTask);
     }
 
-    public ToDo updateToDo(UUID id, NewToDo updatedToDo) {
-        Optional<ToDo> currentToDo = repository.findById(id);
-        // ToDo does not exist
+    public Task updateToDo(UUID id, NewTask updatedToDo) {
+        Optional<Task> currentToDo = repository.findById(id);
+        // Task does not exist
         if(currentToDo.isEmpty()) {
-            throw new ToDoNotFoundException("To Do not found with id " + id);
+            throw new TaskNotFoundException("To Do not found with id " + id);
         } 
         // Update the currentToDo
-        ToDo toDo = currentToDo.get();
+        Task task = currentToDo.get();
         if (updatedToDo.getDueDate() != null) {
-            LocalDate creationDate = toDo.getCreationDate().toInstant()
+            LocalDate creationDate = task.getCreationDate().toInstant()
                                             .atZone(ZoneId.systemDefault())
                                             .toLocalDate();
             LocalDate dueDate = updatedToDo.getDueDate().toInstant()
@@ -75,56 +75,56 @@ public class ToDoService {
                 throw new IllegalArgumentException("Due date cannot be in the past.");
             }
         }
-        toDo.setDueDate(updatedToDo.getDueDate());
-        toDo.setText(updatedToDo.getText());
-        toDo.setPriority(updatedToDo.getPriority());
-        return repository.save(toDo);
+        task.setDueDate(updatedToDo.getDueDate());
+        task.setText(updatedToDo.getText());
+        task.setPriority(updatedToDo.getPriority());
+        return repository.save(task);
     }
 
-    public ToDo completeToDo(UUID id) {
-        Optional<ToDo> currentToDo = repository.findById(id);
-        // ToDo does not exist
+    public Task completeToDo(UUID id) {
+        Optional<Task> currentToDo = repository.findById(id);
+        // Task does not exist
         if(currentToDo.isEmpty()) {
-            throw new ToDoNotFoundException("To Do not found with id " + id);
+            throw new TaskNotFoundException("To Do not found with id " + id);
         } 
         // Update the currentToDo
-        ToDo toDo = currentToDo.get();
-        toDo.setDone(true);
-        if (toDo.getDoneDate() == null) {
-            toDo.setDoneDate(new Date());
+        Task task = currentToDo.get();
+        task.setDone(true);
+        if (task.getDoneDate() == null) {
+            task.setDoneDate(new Date());
         }
-        return repository.save(toDo);
+        return repository.save(task);
     }
 
-    public ToDo uncompleteToDo(UUID id) {
-        Optional<ToDo> currentToDo = repository.findById(id);
-        // ToDo does not exist
+    public Task uncompleteToDo(UUID id) {
+        Optional<Task> currentToDo = repository.findById(id);
+        // Task does not exist
         if(currentToDo.isEmpty()) {
-            throw new ToDoNotFoundException("To Do not found with id " + id);
+            throw new TaskNotFoundException("To Do not found with id " + id);
         } 
         // Update the currentToDo
-        ToDo toDo = currentToDo.get();
+        Task task = currentToDo.get();
         // TODO: I think this will require further validation.
-        toDo.setDone(false);
-        if (toDo.getDoneDate() != null) {
-            toDo.setDoneDate(null);
+        task.setDone(false);
+        if (task.getDoneDate() != null) {
+            task.setDoneDate(null);
         }
-        return repository.save(toDo);
+        return repository.save(task);
     }
 
     public void deleteToDo(UUID id) {
-        Optional<ToDo> currentToDo = repository.findById(id);
-        // ToDo does not exist
+        Optional<Task> currentToDo = repository.findById(id);
+        // Task does not exist
         if(currentToDo.isEmpty()) {
-            throw new ToDoNotFoundException("To Do not found with id " + id);
+            throw new TaskNotFoundException("To Do not found with id " + id);
         } 
         // Update the currentToDo
-        ToDo toDo = currentToDo.get();
+        Task task = currentToDo.get();
     
-        repository.delete(toDo);
+        repository.delete(task);
     }
 
-    public Page<ToDo> getAllToDosFilterAndSort(
+    public Page<Task> getAllToDosFilterAndSort(
         Integer page,
         Integer size,
         Boolean doneFilter, 
@@ -137,9 +137,9 @@ public class ToDoService {
         return repository.findByDoneTextAndPriority(doneFilter, textFilter, priorityFilter, pageable);
     }
 
-    public ToDoStatistics geToDoStatistics() {
+    public TaskStatistics geToDoStatistics() {
         long startTime = System.currentTimeMillis();
-        ToDoStatistics stats = new ToDoStatistics();
+        TaskStatistics stats = new TaskStatistics();
         Long totalDoneSeconds = 0L;
         Long totalLowDoneSeconds = 0L;
         Long totalMediumDoneSeconds = 0L;
@@ -147,20 +147,20 @@ public class ToDoService {
         int currentPage = 0;
 
         Pageable pageable = PageRequest.of(currentPage, 100);
-        Page<ToDo> page;
+        Page<Task> page;
 
         boolean hasNext = true;
         while (hasNext) {
             page = repository.findByDoneTextAndPriority(true, null, null, pageable);
-            for (ToDo toDo : page) {
-                if (toDo.getDoneDate() == null || toDo.getCreationDate() == null) {
+            for (Task task : page) {
+                if (task.getDoneDate() == null || task.getCreationDate() == null) {
                     continue;
                 }
                 
                 stats.incrementTotalDone();
-                Long elapsedTimeSeconds = (toDo.getDoneDate().getTime() - toDo.getCreationDate().getTime()) / 1000;
+                Long elapsedTimeSeconds = (task.getDoneDate().getTime() - task.getCreationDate().getTime()) / 1000;
                 totalDoneSeconds += elapsedTimeSeconds;
-                switch (toDo.getPriority()) {
+                switch (task.getPriority()) {
                     case Priority.LOW:
                         stats.incrementLowDone();
                         totalLowDoneSeconds += elapsedTimeSeconds;

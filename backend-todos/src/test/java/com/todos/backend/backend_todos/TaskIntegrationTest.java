@@ -14,17 +14,17 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.todos.backend.backend_todos.dto.NewToDo;
+import com.todos.backend.backend_todos.dto.NewTask;
 import com.todos.backend.backend_todos.models.Priority;
-import com.todos.backend.backend_todos.models.ToDo;
-import com.todos.backend.backend_todos.repositories.ToDoRepository;
-import com.todos.backend.backend_todos.services.ToDoService;
+import com.todos.backend.backend_todos.models.Task;
+import com.todos.backend.backend_todos.repositories.TaskRepository;
+import com.todos.backend.backend_todos.services.TaskService;
 
 // Load the complete application or context
 @SpringBootTest
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = BackendTodosApplication.class)
-public class ToDoIntegrationTest {
+public class TaskIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -33,16 +33,16 @@ public class ToDoIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private ToDoRepository repository;
+    private TaskRepository repository;
 
 
     @Autowired
-    private ToDoService service;
+    private TaskService service;
 
     @Test
     public void createWhenInvalidInput_thenReturnsBadRequestStatus() throws Exception {
         // Arrange
-        NewToDo invalidToDo = new NewToDo();
+        NewTask invalidToDo = new NewTask();
         invalidToDo.setText("");
         // Act & Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/todos")
@@ -54,25 +54,25 @@ public class ToDoIntegrationTest {
     @Test
     public void createWhenValidInput_thenCreatesNewToDo() throws Exception {
         // Arrange
-        NewToDo validToDo = new NewToDo();
+        NewTask validToDo = new NewTask();
         validToDo.setText("Update API Documentation");
         validToDo.setPriority(Priority.MEDIUM);
 
         // Act
-        ToDo newToDo = service.createToDo(validToDo);
+        Task newTask = service.createToDo(validToDo);
 
         // Assert
-        assertNotNull(newToDo, "New To Do should not be null");
-        assertNotNull(newToDo.getId(), "The id should not be null");
-        assertNotNull(newToDo.getCreationDate(), "Creation date should not be null");
-        assertEquals(validToDo.getText(), newToDo.getText(), "Text should be equal");
-        assertEquals(validToDo.getPriority(), newToDo.getPriority(), "Priority should be equal");
+        assertNotNull(newTask, "New To Do should not be null");
+        assertNotNull(newTask.getId(), "The id should not be null");
+        assertNotNull(newTask.getCreationDate(), "Creation date should not be null");
+        assertEquals(validToDo.getText(), newTask.getText(), "Text should be equal");
+        assertEquals(validToDo.getPriority(), newTask.getPriority(), "Priority should be equal");
         System.out.println("Do i print something?");
-        ToDo savedToDo = repository.findById(newToDo.getId()).orElse(null);
-        assertNotNull(savedToDo, "ToDo wasn't saved");
-        assertEquals(newToDo.getText(), savedToDo.getText());
-        assertEquals(newToDo.getPriority(), savedToDo.getPriority());
-        assertEquals(newToDo.getCreationDate(), savedToDo.getCreationDate());
+        Task savedToDo = repository.findById(newTask.getId()).orElse(null);
+        assertNotNull(savedToDo, "Task wasn't saved");
+        assertEquals(newTask.getText(), savedToDo.getText());
+        assertEquals(newTask.getPriority(), savedToDo.getPriority());
+        assertEquals(newTask.getCreationDate(), savedToDo.getCreationDate());
 
     }
 

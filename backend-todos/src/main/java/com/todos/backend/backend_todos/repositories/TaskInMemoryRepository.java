@@ -16,61 +16,61 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import com.todos.backend.backend_todos.models.Priority;
-import com.todos.backend.backend_todos.models.ToDo;
+import com.todos.backend.backend_todos.models.Task;
 
 @Repository
 @Primary
-public class ToDoInMemoryRepository  implements ToDoRepository{
-    private final Map<UUID, ToDo> database = new HashMap<>();
+public class TaskInMemoryRepository  implements TaskRepository{
+    private final Map<UUID, Task> database = new HashMap<>();
 
     @Override
-    public ToDo save(ToDo toDo) {
-        if (toDo.getId() == null) {
-            toDo.setId(UUID.randomUUID());
+    public Task save(Task task) {
+        if (task.getId() == null) {
+            task.setId(UUID.randomUUID());
         }
-        database.put(toDo.getId(), toDo);
+        database.put(task.getId(), task);
 
-        return toDo;
+        return task;
     }
 
     @Override
-    public Optional<ToDo> findById(UUID id) {
+    public Optional<Task> findById(UUID id) {
         return Optional.ofNullable(database.get(id));
     }
 
     @Override
-    public void delete(ToDo toDo) {
-        database.remove(toDo.getId());
+    public void delete(Task task) {
+        database.remove(task.getId());
     }
 
     @Override
-    public Page<ToDo> findByDoneTextAndPriority(Boolean done, String text, Priority priority, Pageable pageable) {
-        List<ToDo> filteredList = database.values().stream()
-            .filter(todo -> (done == null || todo.getDone().equals(done)) &&
-                            (text == null || todo.getText().toLowerCase().contains(text.toLowerCase())) && 
-                            (priority == null || todo.getPriority() == priority))
+    public Page<Task> findByDoneTextAndPriority(Boolean done, String text, Priority priority, Pageable pageable) {
+        List<Task> filteredList = database.values().stream()
+            .filter(task -> (done == null || task.getDone().equals(done)) &&
+                            (text == null || task.getText().toLowerCase().contains(text.toLowerCase())) && 
+                            (priority == null || task.getPriority() == priority))
             .sorted(createComparatorFromSort(pageable.getSort()))
             .collect(Collectors.toList());
 
             int start = (int) pageable.getOffset();
             int end = Math.min(start + pageable.getPageSize(), filteredList.size());
-            List<ToDo> paginatedList = filteredList.subList(start, end);
+            List<Task> paginatedList = filteredList.subList(start, end);
 
             return new PageImpl<>(paginatedList, pageable, filteredList.size());
     }
 
-    private Comparator<ToDo> createComparatorFromSort(Sort sort) {
-        Comparator<ToDo> comparator = null;
+    private Comparator<Task> createComparatorFromSort(Sort sort) {
+        Comparator<Task> comparator = null;
     
         for (Sort.Order order : sort) {
-            Comparator<ToDo> fieldComparator;
+            Comparator<Task> fieldComparator;
     
             switch (order.getProperty()) {
                 case "dueDate":
-                    fieldComparator = Comparator.comparing(ToDo::getDueDate, Comparator.nullsFirst(Comparator.naturalOrder()));
+                    fieldComparator = Comparator.comparing(Task::getDueDate, Comparator.nullsFirst(Comparator.naturalOrder()));
                     break;
                 case "priority":
-                    fieldComparator = Comparator.comparing(ToDo::getPriority);
+                    fieldComparator = Comparator.comparing(Task::getPriority);
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown sort field: " + order.getProperty());
@@ -85,7 +85,7 @@ public class ToDoInMemoryRepository  implements ToDoRepository{
             comparator = (comparator == null) ? fieldComparator : comparator.thenComparing(fieldComparator);
         }
     
-        return comparator == null ? Comparator.comparing(ToDo::getCreationDate) : comparator; // Default sort
+        return comparator == null ? Comparator.comparing(Task::getCreationDate) : comparator; // Default sort
     }
     
 }
