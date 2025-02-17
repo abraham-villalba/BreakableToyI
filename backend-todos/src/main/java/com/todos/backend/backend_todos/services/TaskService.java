@@ -1,9 +1,9 @@
 package com.todos.backend.backend_todos.services;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -40,16 +40,15 @@ public class TaskService {
         Task newTask = new Task();
         if (task.getDueDate() != null) {
             LocalDate today = LocalDate.now(); // Current date without time
-            LocalDate dueDate = task.getDueDate().toInstant()
-                                    .atZone(ZoneId.systemDefault())
-                                    .toLocalDate();
+            LocalDate dueDate = task.getDueDate();
             if (dueDate.isBefore(today)) {
                 throw new IllegalArgumentException("Due date cannot be in the past.");
             }
         }
-        newTask.setCreationDate(new Date());
+        newTask.setCreationDate(Instant.now());
         newTask.setDone(false);
-        newTask.setDueDate(task.getDueDate());
+        // Set Due Date to UTC-7
+        newTask.setDueDate(task.getDueDate() != null ? task.getDueDate().atStartOfDay(ZoneOffset.UTC).toInstant() : null);
         
         newTask.setText(task.getText());
         newTask.setPriority(task.getPriority());
@@ -65,17 +64,15 @@ public class TaskService {
         // Update the currentTask
         Task task = currentTask.get();
         if (updatedTask.getDueDate() != null) {
-            LocalDate creationDate = task.getCreationDate().toInstant()
-                                            .atZone(ZoneId.systemDefault())
+            LocalDate creationDate = task.getCreationDate()
+                                            .atZone(ZoneOffset.UTC)
                                             .toLocalDate();
-            LocalDate dueDate = updatedTask.getDueDate().toInstant()
-                                .atZone(ZoneId.systemDefault())
-                                .toLocalDate();
+            LocalDate dueDate = updatedTask.getDueDate();
             if (dueDate.isBefore(creationDate)) {
                 throw new IllegalArgumentException("Due date cannot be in the past.");
             }
         }
-        task.setDueDate(updatedTask.getDueDate());
+        task.setDueDate(updatedTask.getDueDate() != null ? updatedTask.getDueDate().atStartOfDay(ZoneOffset.UTC).toInstant() : null);
         task.setText(updatedTask.getText());
         task.setPriority(updatedTask.getPriority());
         return repository.save(task);
@@ -91,7 +88,7 @@ public class TaskService {
         Task task = currentTask.get();
         task.setDone(true);
         if (task.getDoneDate() == null) {
-            task.setDoneDate(new Date());
+            task.setDoneDate(Instant.now());
         }
         return repository.save(task);
     }
@@ -104,7 +101,6 @@ public class TaskService {
         } 
         // Update the currentTask
         Task task = currentTask.get();
-        // TODO: I think this will require further validation.
         task.setDone(false);
         if (task.getDoneDate() != null) {
             task.setDoneDate(null);
@@ -137,7 +133,7 @@ public class TaskService {
         return repository.findByDoneTextAndPriority(doneFilter, textFilter, priorityFilter, pageable);
     }
 
-    public TaskStatistics geTaskStatistics() {
+    public TaskStatistics getTaskStatistics() {
         long startTime = System.currentTimeMillis();
         TaskStatistics stats = new TaskStatistics();
         Long totalDoneSeconds = 0L;
@@ -158,7 +154,7 @@ public class TaskService {
                 }
                 
                 stats.incrementTotalDone();
-                Long elapsedTimeSeconds = (task.getDoneDate().getTime() - task.getCreationDate().getTime()) / 1000;
+                Long elapsedTimeSeconds = (task.getDoneDate().getEpochSecond() - task.getCreationDate().getEpochSecond());
                 totalDoneSeconds += elapsedTimeSeconds;
                 switch (task.getPriority()) {
                     case Priority.LOW:
@@ -248,12 +244,6 @@ public class TaskService {
     private String formatAverageTime(Long averageTimeSeconds) {
         System.out.println("Time in seconds: " + averageTimeSeconds);
         long minutes = averageTimeSeconds / 60;
-        // long hours = 0;
-        // if (minutes >= 60) {
-        //     hours = minutes / 60;
-        //     minutes = minutes % 60;
-        // }
-        //System.out.println("Time in hours: " + hours);
         long seconds = averageTimeSeconds % 60;
         return String.format("%02d:%02d", minutes, seconds);
     }

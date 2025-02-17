@@ -1,11 +1,11 @@
 package com.todos.backend.backend_todos.dto;
 
-import java.util.Date;
+import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.todos.backend.backend_todos.models.Priority;
 
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import io.micrometer.common.lang.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -24,8 +24,9 @@ public class NewTask {
     @NotNull
     private String text;
 
-    @Temporal(TemporalType.DATE)
-    private Date dueDate;
+    @Nullable
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate dueDate;
 
     @NotNull
     private Priority priority;

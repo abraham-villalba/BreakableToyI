@@ -137,7 +137,7 @@ public class TaskController {
      */
     @GetMapping("/todos/stats")
     public ResponseEntity<TaskStatistics> getStatistics() {
-        TaskStatistics stats = service.geTaskStatistics();
+        TaskStatistics stats = service.getTaskStatistics();
         return new ResponseEntity<>(stats, HttpStatus.OK);
     }
     

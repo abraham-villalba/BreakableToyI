@@ -6,8 +6,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -157,8 +158,9 @@ public class TaskControllerTest {
         Task updatedTaskResponse = new Task();
         updatedTaskResponse.setId(existingId);
         updatedTaskResponse.setDone(true);
-        Date doneDate = new Date();
-        String strDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(doneDate);
+        Instant doneDate =  Instant.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneId.of("UTC"));
+        String strDate = formatter.format(doneDate);
         updatedTaskResponse.setDoneDate(doneDate);
         when(taskService.completeTask(eq(existingId))).thenReturn(updatedTaskResponse);
 
@@ -255,7 +257,7 @@ public class TaskControllerTest {
     public void getStatistics_thenReturnsOkStatus() throws Exception {
         // Arrange
         TaskStatistics stats = new TaskStatistics();
-        when(taskService.geTaskStatistics()).thenReturn(stats);
+        when(taskService.getTaskStatistics()).thenReturn(stats);
 
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.get("/todos/stats"))

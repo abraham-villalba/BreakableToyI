@@ -9,9 +9,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Date;
+import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,11 +50,9 @@ public class TaskServiceTest {
         newTask.setText("Sample Task");
         newTask.setPriority(Priority.HIGH);
 
-        Date creationDate = new Date();
-
         Task savedTask = new Task();
         savedTask.setId(UUID.randomUUID());
-        savedTask.setCreationDate(creationDate);
+        savedTask.setCreationDate(Instant.now());
         savedTask.setText(newTask.getText());
         savedTask.setPriority(newTask.getPriority());
 
@@ -77,20 +76,19 @@ public class TaskServiceTest {
         NewTask updatedTask = new NewTask();
         updatedTask.setText("Updated text");
         updatedTask.setPriority(Priority.MEDIUM);
-        updatedTask.setDueDate(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        updatedTask.setDueDate(LocalDate.now());
 
         Task existingTask = new Task();
         existingTask.setId(existingId);
         existingTask.setText("Old text");
         existingTask.setPriority(Priority.LOW);
-        existingTask.setCreationDate(Date.from(LocalDate.now().minusDays(5).atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        existingTask.setDueDate(Date.from(LocalDate.now().minusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
-
+        existingTask.setCreationDate(LocalDate.now().minusDays(5).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        existingTask.setDueDate(LocalDate.now().minusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         Task updatedEntity = new Task();
         updatedEntity.setId(existingId);
         updatedEntity.setText(updatedTask.getText());
         updatedEntity.setPriority(updatedTask.getPriority());
-        updatedEntity.setDueDate(updatedTask.getDueDate());
+        updatedEntity.setDueDate(updatedTask.getDueDate().atStartOfDay(ZoneOffset.UTC).toInstant());
 
         // Mock repository behavior
         when(repository.findById(existingId)).thenReturn(Optional.of(existingTask));
@@ -103,7 +101,7 @@ public class TaskServiceTest {
         assertNotNull(result, "The updated Task should not be null");
         assertEquals(updatedTask.getText(), result.getText(), "The text should be updated");
         assertEquals(updatedTask.getPriority(), result.getPriority(), "The priority should be updated");
-        assertEquals(updatedTask.getDueDate(), result.getDueDate(), "The due date should be updated");
+        assertEquals(updatedTask.getDueDate().atStartOfDay(ZoneOffset.UTC).toInstant(), result.getDueDate(), "The due date should be updated");
 
         // Verify interactions with the repository
         verify(repository, times(1)).findById(existingId);
@@ -117,7 +115,7 @@ public class TaskServiceTest {
         NewTask updatedTask = new NewTask();
         updatedTask.setText("Updated text");
         updatedTask.setPriority(Priority.MEDIUM);
-        updatedTask.setDueDate(new Date());
+        updatedTask.setDueDate(LocalDate.now());
 
         // Mock repository behavior
         when(repository.findById(nonExistentId)).thenReturn(Optional.empty());
@@ -146,7 +144,7 @@ public class TaskServiceTest {
         Task updatedEntity = new Task();
         updatedEntity.setId(existingId);
         updatedEntity.setDone(true);
-        updatedEntity.setDoneDate(new Date());
+        updatedEntity.setDoneDate(Instant.now());
 
         // Mock repository behavior
         when(repository.findById(existingId)).thenReturn(Optional.of(existingTask));
