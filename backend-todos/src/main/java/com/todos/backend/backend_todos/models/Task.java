@@ -15,8 +15,16 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Task {
 
     @Id
@@ -35,60 +43,12 @@ public class Task {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date doneDate;
     
-    @NotBlank(message="Description is required.")
-    @Size(max=120, message="Description should be up to 120 characters.")
+    @NotBlank(message = "Description is required.")
+    @Size(max = 120, message = "Description should be up to 120 characters.")
     private String text;
+    
     private Boolean done;
 
-    @NotNull(message="To Do's priority is required.")
+    @NotNull(message = "Task's priority is required.")
     private Priority priority;
-    
-    // Constructor
-    public Task() {
-    }
-    
-    // Setters and Getters
-    public UUID getId() {
-        return id;
-    }
-    public void setId(UUID id) {
-        this.id = id;
-    }
-    public Date getCreationDate() {
-        return creationDate;
-    }
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-    public Date getDueDate() {
-        return dueDate;
-    }
-    public void setDueDate(Date dueDate) {
-        this.dueDate = dueDate;
-    }
-    public Date getDoneDate() {
-        return doneDate;
-    }
-    public void setDoneDate(Date doneDate) {
-        this.doneDate = doneDate;
-    }
-    public String getText() {
-        return text;
-    }
-    public void setText(String text) {
-        this.text = text;
-    }
-    public Boolean getDone() {
-        return done;
-    }
-    public void setDone(Boolean done) {
-        this.done = done;
-    }
-    public Priority getPriority() {
-        return priority;
-    }
-    public void setPriority(Priority priority) {
-        this.priority = priority;
-    }
-
 }

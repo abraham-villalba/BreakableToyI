@@ -9,10 +9,18 @@ import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class NewTask {
     @NotBlank
-    @Size(min=3,max=120)
+    @Size(min = 3, max = 120)
     @NotNull
     private String text;
 
@@ -21,31 +29,4 @@ public class NewTask {
 
     @NotNull
     private Priority priority;
-
-    public NewTask() {
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public Date getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(Date dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public Priority getPriority() {
-        return priority;
-    }
-
-    public void setPriority(Priority priority) {
-        this.priority = priority;
-    }
 }
