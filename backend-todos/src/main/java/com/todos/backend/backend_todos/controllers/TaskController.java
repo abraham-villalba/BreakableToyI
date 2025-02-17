@@ -117,6 +117,7 @@ public class TaskController {
         return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
+    // Change this function to retun status 204
     /**
      * Deletes a task.
      *
@@ -124,10 +125,11 @@ public class TaskController {
      * @throws TaskNotFoundException if the task with the specified ID is not found
      */
     @DeleteMapping("/todos/{id}")
-    public void deleteTask(@PathVariable UUID id) throws TaskNotFoundException {
+    public ResponseEntity<Void> deleteTask(@PathVariable UUID id) throws TaskNotFoundException {
         service.deleteTask(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
+    
     /**
      * Retrieves task statistics.
      *
