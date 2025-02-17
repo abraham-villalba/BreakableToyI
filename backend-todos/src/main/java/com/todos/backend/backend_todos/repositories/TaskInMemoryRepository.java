@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -18,11 +19,20 @@ import org.springframework.stereotype.Repository;
 import com.todos.backend.backend_todos.models.Priority;
 import com.todos.backend.backend_todos.models.Task;
 
+/**
+ * Repository for Task entity using in-memory storage
+ */
 @Repository
 @Primary
+@Profile("in-memory")
 public class TaskInMemoryRepository  implements TaskRepository{
+    // In-memory storage
     private final Map<UUID, Task> database = new HashMap<>();
 
+    /**
+     * Save a task in the in-memory storage
+     * @param task Task to save
+     */
     @Override
     public Task save(Task task) {
         if (task.getId() == null) {
@@ -33,16 +43,33 @@ public class TaskInMemoryRepository  implements TaskRepository{
         return task;
     }
 
+    /**
+     * Find a task by its ID
+     * @param id ID of the task to find
+     * @return Task with the given ID or null if not found
+     */
     @Override
     public Optional<Task> findById(UUID id) {
         return Optional.ofNullable(database.get(id));
     }
 
+    /**
+     * Delete a task from the in-memory storage
+     * @param task Task to delete
+     */
     @Override
     public void delete(Task task) {
         database.remove(task.getId());
     }
 
+    /**
+     * Find tasks by done, text and priority
+     * @param done Task done status to search
+     * @param text Task task description to search
+     * @param priority Task priority to search
+     * @param pageable Pageable object to paginate the results
+     * @return Page of tasks that match the search criteria
+     */
     @Override
     public Page<Task> findByDoneTextAndPriority(Boolean done, String text, Priority priority, Pageable pageable) {
         List<Task> filteredList = database.values().stream()
@@ -59,6 +86,11 @@ public class TaskInMemoryRepository  implements TaskRepository{
             return new PageImpl<>(paginatedList, pageable, filteredList.size());
     }
 
+    /**
+     * Create a comparator from a Sort object
+     * @param sort Sort object to create the comparator from
+     * @return Comparator object
+     */
     private Comparator<Task> createComparatorFromSort(Sort sort) {
         Comparator<Task> comparator = null;
     
