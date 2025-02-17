@@ -1,13 +1,16 @@
 package com.todos.backend.backend_todos;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,6 +23,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.todos.backend.backend_todos.controllers.TaskController;
 import com.todos.backend.backend_todos.dto.NewTask;
+import com.todos.backend.backend_todos.dto.TaskStatistics;
 import com.todos.backend.backend_todos.exceptions.TaskNotFoundException;
 import com.todos.backend.backend_todos.models.Priority;
 import com.todos.backend.backend_todos.models.Task;
@@ -38,7 +42,7 @@ public class TaskControllerTest {
 
     // Mocked service to avoid loading full context of the application
     @MockBean
-    private TaskService toDoService;
+    private TaskService taskService;
 
     @Test
     public void createWhenInvalidInput_thenReturnsBadRequestStatus() throws Exception {
@@ -101,7 +105,7 @@ public class TaskControllerTest {
         updatedTaskResponse.setId(existingId);
         updatedTaskResponse.setText(updatedTask.getText());
         updatedTaskResponse.setPriority(updatedTask.getPriority());
-        when(toDoService.updateTask(eq(existingId), any(NewTask.class))).thenReturn(updatedTaskResponse);
+        when(taskService.updateTask(eq(existingId), any(NewTask.class))).thenReturn(updatedTaskResponse);
 
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.put("/todos/" + existingId)
@@ -134,7 +138,7 @@ public class TaskControllerTest {
         updatedTask.setPriority(Priority.LOW);
         
         // Mock Service Layer response
-        when(toDoService.updateTask(eq(nonExistingId), any(NewTask.class))).thenThrow(new TaskNotFoundException("To Do not found with id " + nonExistingId));
+        when(taskService.updateTask(eq(nonExistingId), any(NewTask.class))).thenThrow(new TaskNotFoundException("To Do not found with id " + nonExistingId));
 
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.put("/todos/" + nonExistingId)
@@ -156,7 +160,7 @@ public class TaskControllerTest {
         Date doneDate = new Date();
         String strDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(doneDate);
         updatedTaskResponse.setDoneDate(doneDate);
-        when(toDoService.completeTask(eq(existingId))).thenReturn(updatedTaskResponse);
+        when(taskService.completeTask(eq(existingId))).thenReturn(updatedTaskResponse);
 
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.put("/todos/" + existingId + "/done"))
@@ -171,7 +175,7 @@ public class TaskControllerTest {
         UUID nonExistingId = UUID.randomUUID();
         
         // Mock Service Layer response
-        when(toDoService.completeTask(eq(nonExistingId))).thenThrow(new TaskNotFoundException("To Do not found with id " + nonExistingId));
+        when(taskService.completeTask(eq(nonExistingId))).thenThrow(new TaskNotFoundException("To Do not found with id " + nonExistingId));
 
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.put("/todos/" + nonExistingId + "/done"))
@@ -179,5 +183,84 @@ public class TaskControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("To Do not found with id " + nonExistingId));
     }
 
+    // LLM provided tests
+    @Test
+    public void uncompleteTaskExists_thenReturnsOkStatus() throws Exception {
+        // Arrange
+        UUID existingId = UUID.randomUUID();
+        
+        // Mock Service Layer response
+        Task updatedTaskResponse = new Task();
+        updatedTaskResponse.setId(existingId);
+        updatedTaskResponse.setDone(false);
+        when(taskService.uncompleteTask(eq(existingId))).thenReturn(updatedTaskResponse);
+
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.put("/todos/" + existingId + "/undone"))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.done").value(false));
+    }
+
+    @Test
+    public void uncompleteTaskDoesNotExist_thenReturnsNotFoundStatus() throws Exception {
+        // Arrange
+        UUID nonExistingId = UUID.randomUUID();
+        
+        // Mock Service Layer response
+        when(taskService.uncompleteTask(eq(nonExistingId))).thenThrow(new TaskNotFoundException("Task not found with id " + nonExistingId));
+
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.put("/todos/" + nonExistingId + "/undone"))
+            .andExpect(MockMvcResultMatchers.status().isNotFound())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("Task not found with id " + nonExistingId));
+    }
+
+    @Test
+    public void getAllTasksFilterAndSort_thenReturnsOkStatus() throws Exception {
+        // Arrange
+        Page<Task> tasks = Page.empty();
+        when(taskService.getAllTasksFilterAndSort(anyInt(), anyInt(), any(), any(), any(), any())).thenReturn(tasks);
+
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.get("/todos"))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.content").isArray());
+    }
+
+    @Test
+    public void deleteTaskExists_thenReturnsNoContentStatus() throws Exception {
+        // Arrange
+        UUID existingId = UUID.randomUUID();
+        
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.delete("/todos/" + existingId))
+            .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    public void deleteTaskDoesNotExist_thenReturnsNotFoundStatus() throws Exception {
+        // Arrange
+        UUID nonExistingId = UUID.randomUUID();
+        
+        // Mock Service Layer response
+        doThrow(new TaskNotFoundException("To Do not found with id " + nonExistingId)).when(taskService).deleteTask(eq(nonExistingId));
+
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.delete("/todos/" + nonExistingId))
+            .andExpect(MockMvcResultMatchers.status().isNotFound())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("To Do not found with id " + nonExistingId));
+    }
+
+    @Test
+    public void getStatistics_thenReturnsOkStatus() throws Exception {
+        // Arrange
+        TaskStatistics stats = new TaskStatistics();
+        when(taskService.geTaskStatistics()).thenReturn(stats);
+
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.get("/todos/stats"))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.totalDone").value(stats.getTotalDone()));
+    }
     
 }
