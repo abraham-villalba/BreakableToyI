@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TaskNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String,Object> handleToDoNotFound(TaskNotFoundException e) {
+    public Map<String,Object> handleTaskNotFound(TaskNotFoundException e) {
         Map<String,Object> errors = new HashMap<>();
         errors.put("error", e.getMessage());
         return errors;

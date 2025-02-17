@@ -42,37 +42,37 @@ public class TaskIntegrationTest {
     @Test
     public void createWhenInvalidInput_thenReturnsBadRequestStatus() throws Exception {
         // Arrange
-        NewTask invalidToDo = new NewTask();
-        invalidToDo.setText("");
+        NewTask invalidTask = new NewTask();
+        invalidTask.setText("");
         // Act & Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/todos")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(invalidToDo)))
+            .content(objectMapper.writeValueAsString(invalidTask)))
             .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
-    public void createWhenValidInput_thenCreatesNewToDo() throws Exception {
+    public void createWhenValidInput_thenCreatesNewTask() throws Exception {
         // Arrange
-        NewTask validToDo = new NewTask();
-        validToDo.setText("Update API Documentation");
-        validToDo.setPriority(Priority.MEDIUM);
+        NewTask validTask = new NewTask();
+        validTask.setText("Update API Documentation");
+        validTask.setPriority(Priority.MEDIUM);
 
         // Act
-        Task newTask = service.createToDo(validToDo);
+        Task newTask = service.createTask(validTask);
 
         // Assert
         assertNotNull(newTask, "New To Do should not be null");
         assertNotNull(newTask.getId(), "The id should not be null");
         assertNotNull(newTask.getCreationDate(), "Creation date should not be null");
-        assertEquals(validToDo.getText(), newTask.getText(), "Text should be equal");
-        assertEquals(validToDo.getPriority(), newTask.getPriority(), "Priority should be equal");
+        assertEquals(validTask.getText(), newTask.getText(), "Text should be equal");
+        assertEquals(validTask.getPriority(), newTask.getPriority(), "Priority should be equal");
         System.out.println("Do i print something?");
-        Task savedToDo = repository.findById(newTask.getId()).orElse(null);
-        assertNotNull(savedToDo, "Task wasn't saved");
-        assertEquals(newTask.getText(), savedToDo.getText());
-        assertEquals(newTask.getPriority(), savedToDo.getPriority());
-        assertEquals(newTask.getCreationDate(), savedToDo.getCreationDate());
+        Task savedTask = repository.findById(newTask.getId()).orElse(null);
+        assertNotNull(savedTask, "Task wasn't saved");
+        assertEquals(newTask.getText(), savedTask.getText());
+        assertEquals(newTask.getPriority(), savedTask.getPriority());
+        assertEquals(newTask.getCreationDate(), savedTask.getCreationDate());
 
     }
 

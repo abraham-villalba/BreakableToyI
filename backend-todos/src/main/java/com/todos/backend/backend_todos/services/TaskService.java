@@ -36,7 +36,7 @@ public class TaskService {
     public TaskService() {
     }
 
-    public Task createToDo(NewTask task) {
+    public Task createTask(NewTask task) {
         Task newTask = new Task();
         if (task.getDueDate() != null) {
             LocalDate today = LocalDate.now(); // Current date without time
@@ -56,39 +56,39 @@ public class TaskService {
         return repository.save(newTask);
     }
 
-    public Task updateToDo(UUID id, NewTask updatedToDo) {
-        Optional<Task> currentToDo = repository.findById(id);
+    public Task updateTask(UUID id, NewTask updatedTask) {
+        Optional<Task> currentTask = repository.findById(id);
         // Task does not exist
-        if(currentToDo.isEmpty()) {
+        if(currentTask.isEmpty()) {
             throw new TaskNotFoundException("To Do not found with id " + id);
         } 
-        // Update the currentToDo
-        Task task = currentToDo.get();
-        if (updatedToDo.getDueDate() != null) {
+        // Update the currentTask
+        Task task = currentTask.get();
+        if (updatedTask.getDueDate() != null) {
             LocalDate creationDate = task.getCreationDate().toInstant()
                                             .atZone(ZoneId.systemDefault())
                                             .toLocalDate();
-            LocalDate dueDate = updatedToDo.getDueDate().toInstant()
+            LocalDate dueDate = updatedTask.getDueDate().toInstant()
                                 .atZone(ZoneId.systemDefault())
                                 .toLocalDate();
             if (dueDate.isBefore(creationDate)) {
                 throw new IllegalArgumentException("Due date cannot be in the past.");
             }
         }
-        task.setDueDate(updatedToDo.getDueDate());
-        task.setText(updatedToDo.getText());
-        task.setPriority(updatedToDo.getPriority());
+        task.setDueDate(updatedTask.getDueDate());
+        task.setText(updatedTask.getText());
+        task.setPriority(updatedTask.getPriority());
         return repository.save(task);
     }
 
-    public Task completeToDo(UUID id) {
-        Optional<Task> currentToDo = repository.findById(id);
+    public Task completeTask(UUID id) {
+        Optional<Task> currentTask = repository.findById(id);
         // Task does not exist
-        if(currentToDo.isEmpty()) {
+        if(currentTask.isEmpty()) {
             throw new TaskNotFoundException("To Do not found with id " + id);
         } 
-        // Update the currentToDo
-        Task task = currentToDo.get();
+        // Update the currentTask
+        Task task = currentTask.get();
         task.setDone(true);
         if (task.getDoneDate() == null) {
             task.setDoneDate(new Date());
@@ -96,14 +96,14 @@ public class TaskService {
         return repository.save(task);
     }
 
-    public Task uncompleteToDo(UUID id) {
-        Optional<Task> currentToDo = repository.findById(id);
+    public Task uncompleteTask(UUID id) {
+        Optional<Task> currentTask = repository.findById(id);
         // Task does not exist
-        if(currentToDo.isEmpty()) {
+        if(currentTask.isEmpty()) {
             throw new TaskNotFoundException("To Do not found with id " + id);
         } 
-        // Update the currentToDo
-        Task task = currentToDo.get();
+        // Update the currentTask
+        Task task = currentTask.get();
         // TODO: I think this will require further validation.
         task.setDone(false);
         if (task.getDoneDate() != null) {
@@ -112,19 +112,19 @@ public class TaskService {
         return repository.save(task);
     }
 
-    public void deleteToDo(UUID id) {
-        Optional<Task> currentToDo = repository.findById(id);
+    public void deleteTask(UUID id) {
+        Optional<Task> currentTask = repository.findById(id);
         // Task does not exist
-        if(currentToDo.isEmpty()) {
+        if(currentTask.isEmpty()) {
             throw new TaskNotFoundException("To Do not found with id " + id);
         } 
-        // Update the currentToDo
-        Task task = currentToDo.get();
+        // Update the currentTask
+        Task task = currentTask.get();
     
         repository.delete(task);
     }
 
-    public Page<Task> getAllToDosFilterAndSort(
+    public Page<Task> getAllTasksFilterAndSort(
         Integer page,
         Integer size,
         Boolean doneFilter, 
@@ -137,7 +137,7 @@ public class TaskService {
         return repository.findByDoneTextAndPriority(doneFilter, textFilter, priorityFilter, pageable);
     }
 
-    public TaskStatistics geToDoStatistics() {
+    public TaskStatistics geTaskStatistics() {
         long startTime = System.currentTimeMillis();
         TaskStatistics stats = new TaskStatistics();
         Long totalDoneSeconds = 0L;

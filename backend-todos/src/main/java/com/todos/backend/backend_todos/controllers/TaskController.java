@@ -35,27 +35,27 @@ public class TaskController {
     private TaskService service;
 
     @PostMapping("/todos")
-    public Task createToDo(@Valid @RequestBody NewTask task) {
-        return service.createToDo(task);
+    public Task createTask(@Valid @RequestBody NewTask task) {
+        return service.createTask(task);
     }
 
     @PutMapping("/todos/{id}")
-    public Task updateToDo(@PathVariable UUID id, @Valid @RequestBody NewTask updatedToDo) throws TaskNotFoundException {
-        return service.updateToDo(id, updatedToDo);
+    public Task updateTask(@PathVariable UUID id, @Valid @RequestBody NewTask updatedTask) throws TaskNotFoundException {
+        return service.updateTask(id, updatedTask);
     }
 
     @PutMapping("/todos/{id}/done")
-    public Task completeToDo(@PathVariable UUID id) throws TaskNotFoundException {
-        return service.completeToDo(id);
+    public Task completeTask(@PathVariable UUID id) throws TaskNotFoundException {
+        return service.completeTask(id);
     }
 
     @PutMapping("/todos/{id}/undone")
-    public Task uncompleteToDo(@PathVariable UUID id) throws TaskNotFoundException {
-        return service.uncompleteToDo(id);
+    public Task uncompleteTask(@PathVariable UUID id) throws TaskNotFoundException {
+        return service.uncompleteTask(id);
     }
     
     @GetMapping("/todos")
-    public Page<Task> getAllToDosFilterAndSort(
+    public Page<Task> getAllTasksFilterAndSort(
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10", required = false) int size,
         @RequestParam(required = false) String text,
@@ -63,17 +63,17 @@ public class TaskController {
         @RequestParam(required = false) Boolean done,
         @RequestParam(defaultValue = "", required = false) String sortBy
     ) {
-        return service.getAllToDosFilterAndSort(page,size,done,text,priority,sortBy);
+        return service.getAllTasksFilterAndSort(page,size,done,text,priority,sortBy);
     }
 
     @DeleteMapping("/todos/{id}")
-    public void deleteToDo(@PathVariable UUID id) throws TaskNotFoundException {
-        service.deleteToDo(id);
+    public void deleteTask(@PathVariable UUID id) throws TaskNotFoundException {
+        service.deleteTask(id);
     }
 
     @GetMapping("/todos/stats")
     public TaskStatistics getStatistics() {
-        return service.geToDoStatistics();
+        return service.geTaskStatistics();
     }
     
 }

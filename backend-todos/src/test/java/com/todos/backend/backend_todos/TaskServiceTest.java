@@ -43,7 +43,7 @@ public class TaskServiceTest {
     }
 
     @Test
-    public void createValidNewToDo_returnsNewToDo() {
+    public void createValidNewTask_returnsNewTask() {
         // Arrange
         NewTask newTask = new NewTask();
         newTask.setText("Sample Task");
@@ -51,16 +51,16 @@ public class TaskServiceTest {
 
         Date creationDate = new Date();
 
-        Task savedToDo = new Task();
-        savedToDo.setId(UUID.randomUUID());
-        savedToDo.setCreationDate(creationDate);
-        savedToDo.setText(newTask.getText());
-        savedToDo.setPriority(newTask.getPriority());
+        Task savedTask = new Task();
+        savedTask.setId(UUID.randomUUID());
+        savedTask.setCreationDate(creationDate);
+        savedTask.setText(newTask.getText());
+        savedTask.setPriority(newTask.getPriority());
 
-        when(repository.save(any(Task.class))).thenReturn(savedToDo);
+        when(repository.save(any(Task.class))).thenReturn(savedTask);
 
         // Act
-        Task result = service.createToDo(newTask);
+        Task result = service.createTask(newTask);
 
         // Assert
         assertNotNull(result.getId(), "The id should not be null");
@@ -71,61 +71,61 @@ public class TaskServiceTest {
     }
 
     @Test
-    public void updateToDo_WhenToDoExists_ShouldUpdateAndReturnToDo() {
+    public void updateTask_WhenTaskExists_ShouldUpdateAndReturnTask() {
         // Arrange
         UUID existingId = UUID.randomUUID();
-        NewTask updatedToDo = new NewTask();
-        updatedToDo.setText("Updated text");
-        updatedToDo.setPriority(Priority.MEDIUM);
-        updatedToDo.setDueDate(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        NewTask updatedTask = new NewTask();
+        updatedTask.setText("Updated text");
+        updatedTask.setPriority(Priority.MEDIUM);
+        updatedTask.setDueDate(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
-        Task existingToDo = new Task();
-        existingToDo.setId(existingId);
-        existingToDo.setText("Old text");
-        existingToDo.setPriority(Priority.LOW);
-        existingToDo.setCreationDate(Date.from(LocalDate.now().minusDays(5).atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        existingToDo.setDueDate(Date.from(LocalDate.now().minusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        Task existingTask = new Task();
+        existingTask.setId(existingId);
+        existingTask.setText("Old text");
+        existingTask.setPriority(Priority.LOW);
+        existingTask.setCreationDate(Date.from(LocalDate.now().minusDays(5).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        existingTask.setDueDate(Date.from(LocalDate.now().minusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
         Task updatedEntity = new Task();
         updatedEntity.setId(existingId);
-        updatedEntity.setText(updatedToDo.getText());
-        updatedEntity.setPriority(updatedToDo.getPriority());
-        updatedEntity.setDueDate(updatedToDo.getDueDate());
+        updatedEntity.setText(updatedTask.getText());
+        updatedEntity.setPriority(updatedTask.getPriority());
+        updatedEntity.setDueDate(updatedTask.getDueDate());
 
         // Mock repository behavior
-        when(repository.findById(existingId)).thenReturn(Optional.of(existingToDo));
-        when(repository.save(existingToDo)).thenReturn(updatedEntity);
+        when(repository.findById(existingId)).thenReturn(Optional.of(existingTask));
+        when(repository.save(existingTask)).thenReturn(updatedEntity);
 
         // Act
-        Task result = service.updateToDo(existingId, updatedToDo);
+        Task result = service.updateTask(existingId, updatedTask);
 
         // Assert
         assertNotNull(result, "The updated Task should not be null");
-        assertEquals(updatedToDo.getText(), result.getText(), "The text should be updated");
-        assertEquals(updatedToDo.getPriority(), result.getPriority(), "The priority should be updated");
-        assertEquals(updatedToDo.getDueDate(), result.getDueDate(), "The due date should be updated");
+        assertEquals(updatedTask.getText(), result.getText(), "The text should be updated");
+        assertEquals(updatedTask.getPriority(), result.getPriority(), "The priority should be updated");
+        assertEquals(updatedTask.getDueDate(), result.getDueDate(), "The due date should be updated");
 
         // Verify interactions with the repository
         verify(repository, times(1)).findById(existingId);
-        verify(repository, times(1)).save(existingToDo);
+        verify(repository, times(1)).save(existingTask);
     }
 
     @Test
-    public void updateToDo_WhenToDoDoesNotExist_ShouldThrowException() {
+    public void updateTask_WhenTaskDoesNotExist_ShouldThrowException() {
         // Arrange
         UUID nonExistentId = UUID.randomUUID();
-        NewTask updatedToDo = new NewTask();
-        updatedToDo.setText("Updated text");
-        updatedToDo.setPriority(Priority.MEDIUM);
-        updatedToDo.setDueDate(new Date());
+        NewTask updatedTask = new NewTask();
+        updatedTask.setText("Updated text");
+        updatedTask.setPriority(Priority.MEDIUM);
+        updatedTask.setDueDate(new Date());
 
         // Mock repository behavior
         when(repository.findById(nonExistentId)).thenReturn(Optional.empty());
 
         // Act & Assert
         TaskNotFoundException exception = assertThrows(TaskNotFoundException.class, 
-            () -> service.updateToDo(nonExistentId, updatedToDo),
-            "Expected a ToDoNotFoundException to be thrown");
+            () -> service.updateTask(nonExistentId, updatedTask),
+            "Expected a TaskNotFoundException to be thrown");
 
         assertEquals("To Do not found with id " + nonExistentId, exception.getMessage(), 
             "The exception message should match");
@@ -136,12 +136,12 @@ public class TaskServiceTest {
     }
 
     @Test
-    public void completeToDo_WhenToDoExists_ShouldUpdateAndReturnToDo() {
+    public void completeTask_WhenTaskExists_ShouldUpdateAndReturnTask() {
         // Arrange
         UUID existingId = UUID.randomUUID();
 
-        Task existingToDo = new Task();
-        existingToDo.setId(existingId);
+        Task existingTask = new Task();
+        existingTask.setId(existingId);
 
         Task updatedEntity = new Task();
         updatedEntity.setId(existingId);
@@ -149,11 +149,11 @@ public class TaskServiceTest {
         updatedEntity.setDoneDate(new Date());
 
         // Mock repository behavior
-        when(repository.findById(existingId)).thenReturn(Optional.of(existingToDo));
-        when(repository.save(existingToDo)).thenReturn(updatedEntity);
+        when(repository.findById(existingId)).thenReturn(Optional.of(existingTask));
+        when(repository.save(existingTask)).thenReturn(updatedEntity);
 
         // Act
-        Task result = service.completeToDo(existingId);
+        Task result = service.completeTask(existingId);
 
         // Assert
         assertNotNull(result, "The completed Task should not be null");
@@ -164,11 +164,11 @@ public class TaskServiceTest {
 
         // Verify interactions with the repository
         verify(repository, times(1)).findById(existingId);
-        verify(repository, times(1)).save(existingToDo);
+        verify(repository, times(1)).save(existingTask);
     }
 
     @Test
-    public void completeToDo_WhenToDoDoesNotExist_ShouldThrowException() {
+    public void completeTask_WhenTaskDoesNotExist_ShouldThrowException() {
         // Arrange
         UUID nonExistentId = UUID.randomUUID();
 
@@ -177,8 +177,8 @@ public class TaskServiceTest {
 
         // Act & Assert
         TaskNotFoundException exception = assertThrows(TaskNotFoundException.class, 
-            () -> service.completeToDo(nonExistentId),
-            "Expected a ToDoNotFoundException to be thrown");
+            () -> service.completeTask(nonExistentId),
+            "Expected a TaskNotFoundException to be thrown");
 
         assertEquals("To Do not found with id " + nonExistentId, exception.getMessage(), 
             "The exception message should match");
