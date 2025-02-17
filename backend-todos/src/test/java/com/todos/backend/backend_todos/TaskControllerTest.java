@@ -63,7 +63,7 @@ public class TaskControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/todos")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(validTask))) // Costruct the body of the request
-            .andExpect(MockMvcResultMatchers.status().isOk()); // Compare it against the expected value
+            .andExpect(MockMvcResultMatchers.status().isCreated()); // Compare it against the expected value
     }
 
     @Test
