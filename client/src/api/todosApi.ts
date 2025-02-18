@@ -1,8 +1,16 @@
+/**
+ * @file This file contains the functions to interact with the API.
+ */
 import axios, { AxiosError } from "axios";
 import { ToDoFormForApi } from "../types/todoTypes";
 
 const API_URL = 'http://localhost:9090/todos';
 
+/**
+ * Handles an API error.
+ * 
+ * @param {AxiosError} error - The error object.
+ */
 const handleApiError = (error: AxiosError) => {
     if (error.response) {
         // Server responded with a status other than 2xx
@@ -20,6 +28,12 @@ const handleApiError = (error: AxiosError) => {
     }
 };
 
+/**
+ * Fetches all the todos.
+ * 
+ * @param {string} queryParameters - The query parameters to filter the todos.
+ * @returns {Promise} A promise that resolves to the list of todos.
+ */
 export const getTodos = async (queryParameters: string) => {
     try {
         const response = await axios.get(`${API_URL}${queryParameters}`);
@@ -29,6 +43,11 @@ export const getTodos = async (queryParameters: string) => {
     }
 }
 
+/**
+ * Fetches the statistics for the todos.
+ * 
+ * @returns {Promise} A promise that resolves to the statistics.
+ */
 export const getStats = async () => {
     try {
         const response = await axios.get(`${API_URL}/stats`);
@@ -38,6 +57,13 @@ export const getStats = async () => {
     }
 }
 
+/**
+ * Updates a todo.
+ * 
+ * @param {string} id - The id of the todo to update.
+ * @param {ToDoFormForApi} data - The data to update the todo with.
+ * @returns {Promise} A promise that resolves to the updated todo.
+ */
 export const updateTodo = async (id: string, data: ToDoFormForApi) => {
     try {
         const response = await axios.put(`${API_URL}/${id}`, data);
@@ -47,6 +73,12 @@ export const updateTodo = async (id: string, data: ToDoFormForApi) => {
     }
 }
 
+/**
+ * Deletes a todo.
+ * 
+ * @param {string} id - The id of the todo to delete.
+ * @returns {Promise} A promise that resolves to the status of the request.
+ */
 export const deleteTodo = async (id: string) => {
     try {
         const response = await axios.delete(`${API_URL}/${id}`);
@@ -56,6 +88,12 @@ export const deleteTodo = async (id: string) => {
     }
 }
 
+/**
+ * Completes a todo.
+ * 
+ * @param {string} id - The id of the todo to complete or done.
+ * @returns {Promise} A promise that resolves to the updated todo.
+ */
 export const completeTodo = async (id: string) => {
     try {
         const response = await axios.put(`${API_URL}/${id}/done`);
@@ -65,6 +103,12 @@ export const completeTodo = async (id: string) => {
     }
 }
 
+/**
+ * Uncompletes a todo.
+ * 
+ * @param {string} id - The id of the todo to uncomplete or undone.
+ * @returns {Promise} A promise that resolves to the updated todo.
+ */
 export const uncompleteTodo = async (id: string) => {
     try {
         const response = await axios.put(`${API_URL}/${id}/undone`);
@@ -74,6 +118,12 @@ export const uncompleteTodo = async (id: string) => {
     }
 }
 
+/**
+ * Creates a todo.
+ * 
+ * @param {ToDoFormForApi} data - The data to create the todo with.
+ * @returns {Promise} A promise that resolves to the created todo.
+ */
 export const createTodo = async (data: ToDoFormForApi) => {
     try {
         const response = await axios.post(API_URL, data);
