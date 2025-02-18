@@ -4,10 +4,22 @@ import { completeTodo, createTodo, deleteTodo, getStats, getTodos, uncompleteTod
 import { AppDispatch, RootState } from "../store";
 import { AxiosResponse, HttpStatusCode } from "axios";
 
-// Debbuging
-
+/**
+ * Auxiliary function that checks if the status is idle
+ * 
+ * @param status {ToDoState['status']} status of the request
+ * @returns {boolean} true if the status is idle
+ */
 const isIdle = (status: ToDoState['status']) => status === 'idle'; 
 
+/**
+ * Builds the query string for the To Do list
+ * 
+ * @param page {number} current page
+ * @param sort {Sort[]} sorting options
+ * @param filters {ToDoFilter | null} filtering options
+ * @returns {string} query string
+ */
 const buildUrlQuery = (page: number, sort: Sort[], filters: ToDoFilter | null): string => {
     let query = "?";
     query += `page=${page}`;
@@ -31,6 +43,9 @@ const buildUrlQuery = (page: number, sort: Sort[], filters: ToDoFilter | null): 
     return query;
 }  
 
+/**
+ * Fetches To Dos
+ */
 export const fetchToDos = createAsyncThunk(
     'todos/fetchTodos',
     async (_, thunkApi) => {
@@ -51,6 +66,9 @@ export const fetchToDos = createAsyncThunk(
     }
 );
 
+/**
+ * Updates a To Do
+ */
 export const updateToDo = createAsyncThunk(
     'todos/updateTodo',
     async (data : {id: string, todoForm: ToDoFormForApi}, {rejectWithValue}) => {
@@ -76,6 +94,9 @@ export const updateToDo = createAsyncThunk(
     }
 );
 
+/**
+ * Toggles a To Do (Complete/Uncomplete)
+ */
 export const toggleTodo = createAsyncThunk(
     'todo/toggleTodo',
     async (todo: ToDo, {rejectWithValue}) => {
@@ -99,6 +120,9 @@ export const toggleTodo = createAsyncThunk(
     }
 );
 
+/**
+ * Removes a To Do (Delete)
+ */
 export const removeTodo = createAsyncThunk(
     'todo/removeTodo',
     async (id: string, {rejectWithValue}) => {
@@ -119,6 +143,9 @@ export const removeTodo = createAsyncThunk(
     }
 );
 
+/**
+ * Creates a new To Do
+ */
 export const createToDo = createAsyncThunk(
     'todos/createTodo',
     async (todoForm: ToDoFormForApi, {rejectWithValue}) => {
@@ -142,6 +169,9 @@ export const createToDo = createAsyncThunk(
     }
 );
 
+/**
+ * Fetches To Do statistics
+ */
 export const fetchStats = createAsyncThunk(
     'todos/fetchStats',
     async (_, {rejectWithValue}) => {
@@ -160,26 +190,50 @@ export const fetchStats = createAsyncThunk(
     }
 );
 
+/**
+ * Fetches To Dos and statistics
+ * 
+ * @returns {Promise<void>}
+ */
 export const fetchToDosAndStats = () => async (dispatch : AppDispatch) => {
     await dispatch(fetchToDos());
     await dispatch(fetchStats());
 }
 
+/**
+ * Delete a ToDo and updates the statistics
+ * 
+ * @param id {string} id of the ToDo to delete
+ * @returns {Promise<void>}
+ */
 export const deleteToDoAndUpdateStats = (id: string) => async (dispatch : AppDispatch) => {
     await dispatch(removeTodo(id));
     await dispatch(fetchStats());
 }
 
+/**
+ * Update a ToDo and updates the statistics
+ * 
+ * @param data {id: string, todoForm: ToDoFormForApi} id of the ToDo to update and the new data
+ * @returns {Promise<void>}
+ */
 export const updateToDoAndStats = (data : {id: string, todoForm: ToDoFormForApi}) => async (dispatch : AppDispatch) => {
     await dispatch(updateToDo(data));
     await dispatch(fetchStats());
 }
 
+/**
+ * Toggle a ToDo and update the statistics
+ * 
+ * @param todo ToDo to toggle
+ * @returns  {Promise<void>} 
+ */
 export const toggleToDoAndUpdateStats = (todo: ToDo) => async (dispatch : AppDispatch) => {
     await dispatch(toggleTodo(todo));
     await dispatch(fetchStats());
 }
 
+// Slice initial state
 const initialState: ToDoState = {
     items: [],
     totalCount: 0,
@@ -196,6 +250,16 @@ const initialState: ToDoState = {
     filterBy: null
 }
 
+/**
+ * todoSlice
+ * 
+ * This slice manages the state of the To Do list, including the list of To Dos, 
+ * the current page, the sorting and filtering options, and the statistics.
+ * It includes actions for fetching To Dos, updating To Dos, toggling To Dos,
+ * removing To Dos, creating To Dos, and fetching statistics.
+ * 
+ * @reduxSlice
+ */
 const todoSlice = createSlice({
     name: 'todos',
     initialState,
