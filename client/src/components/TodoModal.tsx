@@ -18,7 +18,18 @@ type ToDoForm = {
     dueDate: string;
 }
 
-
+/**
+ * TodoModal component.
+ * 
+ * This component displays a modal to add or edit a ToDo.
+ * 
+ * @param param0 - The isOpen, onClose and todo props.
+ * @component
+ * @example
+ * return (
+ * <TodoModal isOpen={true} onClose={() => {}} todo={null} />
+ * )
+ */
 export default function TodoModal({isOpen, onClose, todo} : TodoModalProps) {
     const dispatch = useDispatch<AppDispatch>();
     const [formData, setFormData] = useState<ToDoForm>({

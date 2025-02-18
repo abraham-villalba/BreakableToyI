@@ -2,7 +2,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
 import { fetchToDos, setCurrentPage } from "../redux/slices/todoSlice";
 
-
+/**
+ * PaginationBar component.
+ * 
+ * This component displays a pagination bar for the ToDos.
+ * 
+ * @component
+ * @example
+ * return (
+ * <PaginationBar />
+ * )
+ * 
+ */
 export default function PaginationBar() {
     const dispatch = useDispatch<AppDispatch>();
     const {currentPage, totalPages, isLast} = useSelector((state: RootState) => state.todos.pagination)
@@ -52,7 +63,7 @@ export default function PaginationBar() {
 
     const pages = getPageRange(currentPage + 1, totalPages)
 
-    
+    if (totalPages === 0) return null;
       
     
     return (

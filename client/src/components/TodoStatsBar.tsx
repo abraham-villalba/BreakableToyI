@@ -1,6 +1,18 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 
+/**
+ * TodoStatsBar component.
+ * 
+ * This component displays statistics about the tasks.
+ * 
+ * @component
+ * @example
+ * return (
+ * <TodoStatsBar />
+ * )
+ * 
+ */
 export default function TodoStatsBar() {
 	const { stats } = useSelector((state: RootState) => state.todos);
   

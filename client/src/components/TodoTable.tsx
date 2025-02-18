@@ -9,7 +9,19 @@ type TodoTableProps = {
     handleEdit: (todo: ToDo) => void;
 }
 
-
+/**
+ * TodoTable component.
+ * 
+ * This component displays a table of ToDos.
+ * 
+ * @param param0 - The handleEdit function.
+ * @component
+ * @example
+ * return (
+ *  <TodoTable handleEdit={handleEdit} />
+ * )
+ * 
+ */
 export default function TodoTable({handleEdit} : TodoTableProps) {
     const dispatch = useDispatch<AppDispatch>();
     const { items, status } = useSelector((state: RootState) => state.todos);
@@ -41,6 +53,7 @@ export default function TodoTable({handleEdit} : TodoTableProps) {
         
     }
 
+    // Get the color for the row based on the due date
     const getColor = (todo: ToDo) : string => {
         let bg = "";
         if (todo.dueDate && !todo.done) {
