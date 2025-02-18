@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String,Object> handleInvalidPriority(HttpMessageNotReadableException e) {
         Map<String,Object> errors = new HashMap<>();
-        errors.put("priority", e.getMessage());
+        errors.put("error", e.getMessage());
         return errors;
     }
 
