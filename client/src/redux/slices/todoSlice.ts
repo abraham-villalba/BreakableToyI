@@ -278,7 +278,6 @@ const todoSlice = createSlice({
         updateItem(state, action: PayloadAction<ToDo>) {
             // Only update the todo if it's on the current items list.
             const updatedToDo: ToDo = action.payload;
-            console.log(updateToDo);
             const index = state.items.findIndex((todo) => todo.id === updatedToDo.id);
             if (index >= 0) {
                 state.items[index] = updatedToDo;
@@ -402,7 +401,6 @@ const todoSlice = createSlice({
                 state.status = 'loading'; // Stats request in progress
             })
             .addCase(fetchStats.fulfilled, (state, action: PayloadAction<any>) => {
-                console.log(action.payload);
                 todoSlice.caseReducers.setStats(state, action);
                 state.status = 'idle';
             })
