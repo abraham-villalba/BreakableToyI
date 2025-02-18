@@ -6,6 +6,7 @@ import { useState } from "react";
 import TodoModal from "./TodoModal";
 import TodoStatsBar from "./TodoStatsBar";
 import ErrorModal from './ErrorModal';
+import FeedbackModal from "./FeedbackModal";
 
 
 export default function TodoPage() {
@@ -33,6 +34,7 @@ export default function TodoPage() {
             <PaginationBar />
             <TodoStatsBar />
             <ErrorModal />
+            <FeedbackModal />
         </>
     )
 }

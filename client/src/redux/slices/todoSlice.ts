@@ -291,6 +291,7 @@ const todoSlice = createSlice({
             })
             .addCase(toggleTodo.rejected, (state, action: PayloadAction<any>) => {
                 state.status = 'failed';
+                state.status = 'idle';
                 state.error = action.payload.message ?? 'Unknown error';
             })
             .addCase(toggleTodo.fulfilled, (state, action: PayloadAction<any>) => {
@@ -298,9 +299,10 @@ const todoSlice = createSlice({
                 todoSlice.caseReducers.updateItem(state, action);
             })
             .addCase(removeTodo.pending, (state) => {
-                state.status = 'idle';
+                state.status = 'loading';
             })
             .addCase(removeTodo.rejected, (state, action: PayloadAction<any>) => {
+                state.status = 'idle';
                 state.error = action.payload.message ?? 'Unknown error';
             })
             .addCase(removeTodo.fulfilled, (state, action: PayloadAction<any>) => {
@@ -308,10 +310,11 @@ const todoSlice = createSlice({
                 todoSlice.caseReducers.removeItemWithId(state, action);
             })
             .addCase(createToDo.pending, (state) => {
-                state.status = 'idle';
+                state.status = 'loading';
             })
             .addCase(createToDo.rejected, (state, action: PayloadAction<any>) => {
                 state.error = action.payload.message ?? 'Unknown error';
+                state.status = 'idle';
             })
             .addCase(createToDo.fulfilled, (state, action: PayloadAction<any>) => {
                 state.status = 'idle';
@@ -327,6 +330,7 @@ const todoSlice = createSlice({
             })
             .addCase(fetchStats.rejected, (state, action: PayloadAction<any>) => {
                 state.error = action.payload.message ?? 'Unknown error';
+                state.status = 'idle';
             })
     }
 })
