@@ -1,6 +1,17 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 
+/**
+ * FeedbackModal component.
+ * 
+ * This component displays a feedback modal when loading.
+ * 
+ * @component
+ * @example
+ * return (
+ * <FeedbackModal />
+ * )
+ */
 export default function FeedbackModal() {
     const { status } = useSelector((state: RootState) => state.todos);
 

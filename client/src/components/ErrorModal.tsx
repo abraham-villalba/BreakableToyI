@@ -2,10 +2,23 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
 import { clearError } from "../redux/slices/todoSlice";
 
-export default function TodoModal() {
+/**
+ * TodoModal component.
+ * 
+ * This component displays an error modal when an error occurs.
+ * 
+ * @component
+ * @example
+ * return (
+ *  <TodoModal />
+ * )
+ * 
+ */
+export default function ErrorModal() {
     const { error } = useSelector((state: RootState) => state.todos);
     const dispatch = useDispatch<AppDispatch>();
 
+    // Close the modal
     const onClose = () => {
         dispatch(clearError());
     }

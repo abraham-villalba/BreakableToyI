@@ -10,6 +10,18 @@ type ToDoFilterForm = {
     done: 'DONE' | 'UNDONE' | 'ALL';
 }
 
+/**
+ * TodoFilterForm component.
+ * 
+ * This component displays a form to filter the ToDos.
+ * 
+ * @component
+ * @example
+ * return (
+ * <TodoFilterForm />
+ * )
+ * 
+ */
 export default function TodoFilterForm() {
     const dispatch = useDispatch<AppDispatch>();
     const { filterBy } = useSelector((state: RootState) => state.todos);

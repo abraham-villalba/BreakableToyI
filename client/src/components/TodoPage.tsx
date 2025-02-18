@@ -8,7 +8,18 @@ import TodoStatsBar from "./TodoStatsBar";
 import ErrorModal from './ErrorModal';
 import FeedbackModal from "./FeedbackModal";
 
-
+/**
+ * TodoPage component
+ * 
+ * This component displays the main page for the ToDo feature.
+ * 
+ * @component
+ * @example
+ * return (
+ * <TodoPage />
+ * )
+ * 
+ */
 export default function TodoPage() {
     const [isModalOpen, setModalOpen] = useState(false);
     const [currentTodo, setCurrentTodo] = useState<ToDo | null>(null);
