@@ -103,7 +103,7 @@ export const removeTodo = createAsyncThunk(
     async (id: string, {rejectWithValue}) => {
         try {
             const response = await deleteTodo(id);
-            if (response.status !== HttpStatusCode.Ok) {
+            if (response.status !== HttpStatusCode.NoContent) {
                 throw new Error("Failed to delete task...")
             }
             return id;
