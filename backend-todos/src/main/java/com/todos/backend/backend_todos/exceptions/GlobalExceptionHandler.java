@@ -29,16 +29,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String,Object> handleInvalidPriority(HttpMessageNotReadableException e) {
         Map<String,Object> errors = new HashMap<>();
-        errors.put("priority", e.getMessage());
-        // e.getBindingResult().getFieldErrors().forEach(error -> {
-        //     errors.put(error.getField(), error.getDefaultMessage());
-        // });
+        errors.put("error", e.getMessage());
         return errors;
     }
 
-    @ExceptionHandler(ToDoNotFoundException.class)
+    @ExceptionHandler(TaskNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String,Object> handleToDoNotFound(ToDoNotFoundException e) {
+    public Map<String,Object> handleTaskNotFound(TaskNotFoundException e) {
         Map<String,Object> errors = new HashMap<>();
         errors.put("error", e.getMessage());
         return errors;

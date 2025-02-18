@@ -1,6 +1,6 @@
 package com.todos.backend.backend_todos.dto;
 
-public interface ToDoStatisticsProjection {
+public interface TaskStatisticsProjection {
     long getTotalDone();
     long getTotalDoneSeconds();
     long getTotalLowDoneSeconds();
