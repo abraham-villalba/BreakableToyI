@@ -38,9 +38,10 @@ export const fetchToDos = createAsyncThunk(
             const state = thunkApi.getState() as RootState;
             const queryParameters = buildUrlQuery(state.todos.pagination.currentPage, state.todos.sortBy, state.todos.filterBy);
             const response = await getTodos(queryParameters);
-            return response.data;
+            return response;
         } catch (error) {
-            return thunkApi.rejectWithValue({message: "Unable to fetch records..."});
+            console.log(error);
+            return thunkApi.rejectWithValue({message: error instanceof Error ? error.message : "Unable to fetch records..."});
         }
     },
     {
@@ -61,10 +62,10 @@ export const updateToDo = createAsyncThunk(
                 dueDate: todoForm.dueDate !== "" ? todoForm.dueDate : null
             };
             const response = await updateTodo(id, dataForApi);
-            return response.data;
+            return response;
         } catch (error) {
             console.log(error);
-            return rejectWithValue({message: "Error updating To Do"});
+            return rejectWithValue({message: error instanceof Error ? error.message : "Error updating To Do"});
         }
         
     },
@@ -86,9 +87,9 @@ export const toggleTodo = createAsyncThunk(
             } else {
                 response = await completeTodo(id);
             }
-            return response.data;
+            return response;
         } catch (error) {
-            return rejectWithValue({message: "Error completing/uncompleting To Do"});
+            return rejectWithValue({message: error instanceof Error ? error.message : "Error completing/uncompleting To Do"});
         }
     },
     {
@@ -102,13 +103,13 @@ export const removeTodo = createAsyncThunk(
     'todo/removeTodo',
     async (id: string, {rejectWithValue}) => {
         try {
-            const response = await deleteTodo(id);
-            if (response.status !== HttpStatusCode.NoContent) {
+            const status = await deleteTodo(id);
+            if (status !== HttpStatusCode.NoContent) {
                 throw new Error("Failed to delete task...")
             }
             return id;
         } catch (error) {
-            return rejectWithValue({message: "Error deleting To Do"});
+            return rejectWithValue({message: error instanceof Error ? error.message : "Error deleting To Do"});
         }
     },
     {
@@ -128,9 +129,9 @@ export const createToDo = createAsyncThunk(
                 dueDate: todoForm.dueDate !== "" ? todoForm.dueDate : null
             };
             const response = await createTodo(dataForApi);
-            return response.data;
+            return response;
         } catch (error) {
-            return rejectWithValue("Error creating To Do");
+            return rejectWithValue({message: error instanceof Error ? error.message : "Error creating To Do"});
         }
         
     },
@@ -146,9 +147,10 @@ export const fetchStats = createAsyncThunk(
     async (_, {rejectWithValue}) => {
         try {
             const response = await getStats();
-            return response.data;
+            return response;
         } catch (error) {
-            return rejectWithValue({message: "Error fetching To Do statistics"});
+            console.log(error);
+            return rejectWithValue({message: error instanceof Error ? error.message : "Error fetching To Do statistics"});
         }  
     },
     {
@@ -319,6 +321,7 @@ const todoSlice = createSlice({
                 state.status = 'loading'; // Stats request in progress
             })
             .addCase(fetchStats.fulfilled, (state, action: PayloadAction<any>) => {
+                console.log(action.payload);
                 todoSlice.caseReducers.setStats(state, action);
                 state.status = 'idle';
             })
