@@ -30,9 +30,6 @@ public class GlobalExceptionHandler {
     public Map<String,Object> handleInvalidPriority(HttpMessageNotReadableException e) {
         Map<String,Object> errors = new HashMap<>();
         errors.put("priority", e.getMessage());
-        // e.getBindingResult().getFieldErrors().forEach(error -> {
-        //     errors.put(error.getField(), error.getDefaultMessage());
-        // });
         return errors;
     }
 

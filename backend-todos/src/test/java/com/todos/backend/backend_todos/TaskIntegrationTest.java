@@ -67,7 +67,6 @@ public class TaskIntegrationTest {
         assertNotNull(newTask.getCreationDate(), "Creation date should not be null");
         assertEquals(validTask.getText(), newTask.getText(), "Text should be equal");
         assertEquals(validTask.getPriority(), newTask.getPriority(), "Priority should be equal");
-        System.out.println("Do i print something?");
         Task savedTask = repository.findById(newTask.getId()).orElse(null);
         assertNotNull(savedTask, "Task wasn't saved");
         assertEquals(newTask.getText(), savedTask.getText());
