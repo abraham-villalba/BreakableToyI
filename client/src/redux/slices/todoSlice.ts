@@ -190,14 +190,23 @@ export const fetchStats = createAsyncThunk(
     }
 );
 
+// Utility function to dispatch an action and then fetch the statistics
+const dispatchActionAndFetchStats = async (dispatch: AppDispatch, action: any) => {
+    try {
+        await dispatch(action);
+        await dispatch(fetchStats());
+    } catch (error) {
+        console.error('Error dispatching action and fetching stats:', error);
+    }
+}
+
 /**
  * Fetches To Dos and statistics
  * 
  * @returns {Promise<void>}
  */
 export const fetchToDosAndStats = () => async (dispatch : AppDispatch) => {
-    await dispatch(fetchToDos());
-    await dispatch(fetchStats());
+    await dispatchActionAndFetchStats(dispatch, fetchToDos());
 }
 
 /**
@@ -207,8 +216,7 @@ export const fetchToDosAndStats = () => async (dispatch : AppDispatch) => {
  * @returns {Promise<void>}
  */
 export const deleteToDoAndUpdateStats = (id: string) => async (dispatch : AppDispatch) => {
-    await dispatch(removeTodo(id));
-    await dispatch(fetchStats());
+    await dispatchActionAndFetchStats(dispatch, removeTodo(id));
 }
 
 /**
@@ -218,8 +226,7 @@ export const deleteToDoAndUpdateStats = (id: string) => async (dispatch : AppDis
  * @returns {Promise<void>}
  */
 export const updateToDoAndStats = (data : {id: string, todoForm: ToDoFormForApi}) => async (dispatch : AppDispatch) => {
-    await dispatch(updateToDo(data));
-    await dispatch(fetchStats());
+    await dispatchActionAndFetchStats(dispatch, updateToDo(data));
 }
 
 /**
@@ -229,8 +236,7 @@ export const updateToDoAndStats = (data : {id: string, todoForm: ToDoFormForApi}
  * @returns  {Promise<void>} 
  */
 export const toggleToDoAndUpdateStats = (todo: ToDo) => async (dispatch : AppDispatch) => {
-    await dispatch(toggleTodo(todo));
-    await dispatch(fetchStats());
+    await dispatchActionAndFetchStats(dispatch, toggleTodo(todo));
 }
 
 // Slice initial state
@@ -264,9 +270,11 @@ const todoSlice = createSlice({
     name: 'todos',
     initialState,
     reducers: {
+        // Set the current page
         setCurrentPage(state, action: PayloadAction<number>) {
             state.pagination.currentPage = action.payload;
         },
+        // Update an item in the list
         updateItem(state, action: PayloadAction<ToDo>) {
             // Only update the todo if it's on the current items list.
             const updatedToDo: ToDo = action.payload;
@@ -276,10 +284,12 @@ const todoSlice = createSlice({
                 state.items[index] = updatedToDo;
             }
         },
+        // Remove an item from the list
         removeItemWithId(state, action: PayloadAction<string>) {
             state.items = state.items.filter(item => item.id !== action.payload);
             state.totalCount--;
         },
+        // Insert a new item to the list
         insertItem(state, action: PayloadAction<any>) {
             state.items.unshift(action.payload);
             if (state.items.length > 10) {
@@ -289,6 +299,7 @@ const todoSlice = createSlice({
                 state.pagination.totalPages = state.pagination.totalPages > 0 ? state.pagination.totalPages : 1;
             }
         },
+        // Add a sorting option to the list
         addSortBy(state, action: PayloadAction<string>) {
 
             const field = action.payload;
@@ -299,10 +310,12 @@ const todoSlice = createSlice({
             const exists = state.sortBy.some((item) => item.field === field);
             state.sortBy = exists ? sortBy : [...sortBy, {field, asc: true}];
         },
+        // Add a filter to the list
         addFilterBy(state, action: PayloadAction<ToDoFilter>) {
             const filter = action.payload;
             state.filterBy = filter;
         },
+        // Set the statistics
         setStats(state, action: PayloadAction<any>) {
             const stats : ToDoState['stats'] = {
                 completed: action.payload.totalDone,
@@ -316,6 +329,7 @@ const todoSlice = createSlice({
             };
             state.stats  = stats;
         },
+        // Clear the error message
         clearError(state) {
             state.error = null;
         }
