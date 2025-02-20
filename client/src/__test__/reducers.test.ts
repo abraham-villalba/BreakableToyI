@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import todoReducer, {addFilterBy, setCurrentPage, insertItem, removeItemWithId, updateItem} from "../redux/slices/todoSlice";
+import todoReducer, {addFilterBy, setCurrentPage, insertItem, removeItemWithId, updateItem, addSortBy, setStats} from "../redux/slices/todoSlice";
 import { ToDo, ToDoFilter, ToDoState } from "../types/todoTypes";
 
 describe('todoSlice reducers', () => {
@@ -69,6 +69,35 @@ describe('todoSlice reducers', () => {
         expect(nextState.items.length).toEqual(3);
         expect(nextState.totalCount).toEqual(3);
         expect(nextState.items[0]).toEqual(updatedItem); 
+    });
+
+    it('should add a sort option', () => {
+        const nextState = todoReducer(initialState, addSortBy('priority'));
+        expect(nextState.sortBy.length).toEqual(1);
+        expect(nextState.sortBy[0]).toEqual({field: 'priority', asc: true});
+    });
+
+    it('should toggle the sort order if field in sortBy', () => {
+        const auxState = initialState;
+        auxState.sortBy = [{field: 'priority', asc: true}];
+        const nextState = todoReducer(auxState, addSortBy('priority'));
+        expect(nextState.sortBy.length).toEqual(1);
+        expect(nextState.sortBy[0]).toEqual({field: 'priority', asc: false});
+    });
+
+    it('should set the statistics', () => {
+        const stats = {
+            totalDone: 10,
+            averageDoneTime: "2m 10s",
+            totalHighDone: 7,
+            averageHighDoneTime: "2m 30s",
+            totalLowDone: 3,
+            averageLowDoneTime: "1m 30s",
+            totalMediumDone: 0,
+            averageMediumDoneTime: ""
+        }
+        const nextState = todoReducer(initialState, setStats(stats));
+        expect(nextState.stats?.completed).toEqual(stats.totalDone);
     });
     
     
