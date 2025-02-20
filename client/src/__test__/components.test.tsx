@@ -3,6 +3,7 @@ import { ToDoState } from "../types/todoTypes";
 import { renderWithRedux } from "../utils/testUtils";
 import TodoPage from "../components/TodoPage";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
+import PaginationBar from "../components/PaginationBar";
 
 describe('Testing components', () => {
     const mockState: ToDoState = {
@@ -69,5 +70,52 @@ describe('Testing components', () => {
     });
 
 
+
+});
+
+describe('Testing PaginationBar', () => {
+    const mockState: ToDoState = {
+        items: [],
+        totalCount: 3,
+        stats: null,
+        status: 'idle',
+        error: null,
+        pagination: {
+            currentPage: 0,
+            pageSize: 10,
+            totalPages: 5,
+            isLast: true
+        },
+        sortBy: [],
+        filterBy: null
+    };
+
+    it('should render pagination buttons', () => {
+        renderWithRedux(<PaginationBar />, { todos: mockState });
+
+        expect(screen.getByText('<<')).toBeDefined();
+        expect(screen.getByText('<')).toBeDefined();
+        expect(screen.getByText('1')).toBeDefined();
+        expect(screen.getByText('>')).toBeDefined();
+        expect(screen.getByText('>>')).toBeDefined();
+    });
+
+    it('should disable the previous buttons on first page', () => {
+        renderWithRedux(<PaginationBar />, { todos: mockState });
+        const firstButton = screen.getByText('<<') as HTMLButtonElement;
+        const prevButton = screen.getByText('<') as HTMLButtonElement;
+        
+        expect(firstButton.disabled).toBeTruthy();
+        expect(prevButton.disabled).toBeTruthy();
+    });
+
+    it('should enable next and last button to be enabled if not on last page', () => {
+        renderWithRedux(<PaginationBar />, { todos: mockState });
+        const last = screen.getByText('>>') as HTMLButtonElement;
+        const next = screen.getByText('>') as HTMLButtonElement;
+
+        expect(last.getAttribute("disabled")).toBeFalsy();
+        expect(next.getAttribute("disabled")).toBeFalsy();
+    });
 
 });
